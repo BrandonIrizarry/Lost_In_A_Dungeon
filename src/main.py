@@ -9,6 +9,11 @@ class ImageInfo:
     rect: pg.Rect
 
 
+tile_legend = {
+    "stairs_down": pg.math.Vector2(5, 2)
+}
+
+
 # Use platform independent file paths.
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, "../data")
@@ -32,11 +37,26 @@ def load_image(name, scale=1) -> ImageInfo:
     return ImageInfo(image, image.get_rect())
 
 
-scale = 2
+scale = 1
 window = pg.display.set_mode((128 * scale, 128 * scale))
 tileset_info = load_image("ff_castle.png", scale)
 
-window.blit(tileset_info.image, (0, 0))
+
+def load_tile(tile_name: str,
+              tileset_info: ImageInfo,
+              size: float) -> ImageInfo:
+
+    x_tile, y_tile = tile_legend[tile_name]
+    rect = pg.Rect(x_tile * size, y_tile * size, size, size)
+
+    image = tileset_info.image.subsurface(rect)
+
+    return ImageInfo(image, rect)
+
+
+tile_info = load_tile("stairs_down", tileset_info, 16)
+
+window.blit(tile_info.image, (16, 16))
 
 
 def mainloop():

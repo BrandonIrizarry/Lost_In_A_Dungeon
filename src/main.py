@@ -32,11 +32,9 @@ def load_image(name, scale=1) -> ImageInfo:
     return ImageInfo(image, image.get_rect())
 
 
-window = pg.display.set_mode((128, 128))
-tileset_info = load_image("ff_castle.png")
-
-location = pg.math.Vector2(96, 96)
-rectangle = pg.Rect(64, 0, 64, 64)
+scale = 2
+window = pg.display.set_mode((128 * scale, 128 * scale))
+tileset_info = load_image("ff_castle.png", scale)
 
 window.blit(tileset_info.image, (0, 0))
 

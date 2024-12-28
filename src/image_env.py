@@ -10,7 +10,7 @@ class ImageInfo:
     rect: pg.Rect
 
 
-class Tile(Enum):
+class TileDef(Enum):
     STAIRS_DOWN = pg.math.Vector2(5, 2)
 
 
@@ -38,7 +38,7 @@ class ImageEnv:
         self.window = pg.display.set_mode((win_width * scale,
                                            win_height * scale))
 
-    def load_tile(self, tile: Tile, tileset_info: ImageInfo) -> ImageInfo:
+    def load_tile(self, tile: TileDef, tileset_info: ImageInfo) -> ImageInfo:
         """Load a single, discrete tile from a tileset.
 
         """

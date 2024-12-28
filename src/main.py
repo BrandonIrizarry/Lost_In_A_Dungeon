@@ -13,7 +13,7 @@ ienv = image_env.ImageEnv(win_width=128,
 
 window = ienv.window
 tileset_info = ienv.load_image(data_dir, "ff_castle.png")
-tile_info = ienv.load_tile(image_env.Tile.STAIRS_DOWN,
+tile_info = ienv.load_tile(image_env.TileDef.STAIRS_DOWN,
                            tileset_info)
 
 window.blit(tile_info.image, (ienv.size, ienv.size))

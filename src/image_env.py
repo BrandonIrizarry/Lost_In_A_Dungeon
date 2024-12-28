@@ -18,8 +18,8 @@ class TileDef(Enum):
 
 
 class ImageEnv:
-    """A class bundling all image and tile data into a consistent
-    whole.
+    """Make sure that all image-sizing data is defined and used
+    coherently.
 
     Fields:
 

@@ -61,6 +61,15 @@ class ImageEnv:
 
 
 class Tiles:
+    """Convenience class for managing a tileset.
+
+    Fields:
+
+    info: The ImageInfo datclass associated with the tileset.
+
+    ienv: The ImageEnv used by our application.
+
+    """
     def __init__(self, data_dir: str,
                  basename: str,
                  ienv: ImageEnv):

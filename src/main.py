@@ -19,10 +19,10 @@ stairs_up = tiles.load(image_env.TileDef.STAIRS_UP)
 treasure = tiles.load(image_env.TileDef.TREASURE)
 pillar = tiles.load(image_env.TileDef.PILLAR)
 
-window.blit(stairs_down.image, (ienv.size, ienv.size))
-window.blit(stairs_up.image, (2 * ienv.size, 3 * ienv.size))
-window.blit(treasure.image, (6 * ienv.size, 3 * ienv.size))
-window.blit(pillar.image, (4 * ienv.size, 4 * ienv.size))
+tiles.blit(stairs_down, pg.math.Vector2(1, 1))
+tiles.blit(stairs_up, pg.math.Vector2(2, 3))
+tiles.blit(treasure, pg.math.Vector2(6, 3))
+tiles.blit(pillar, pg.math.Vector2(4, 4))
 
 
 def mainloop():

@@ -91,3 +91,12 @@ class Tiles:
         image = self.info.image.subsurface(rect)
 
         return ImageInfo(image, rect)
+
+    def blit(self, tile_info: ImageInfo, pos: pg.math.Vector2):
+        """Blit the given tile onto the ienv window.
+
+        Use the primitive coordinates defined by 'pos'.
+
+        """
+        size = self.ienv.size
+        self.ienv.window.blit(tile_info.image, (pos.x * size, pos.y * size))

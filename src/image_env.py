@@ -43,7 +43,7 @@ class ImageEnv:
 
         """
 
-        x_tile, y_tile = Tile.STAIRS_DOWN.value
+        x_tile, y_tile = tile.value
 
         rect = pg.Rect(x_tile * self.size,
                        y_tile * self.size,

@@ -23,7 +23,8 @@ class ImageEnv:
     scale: The overall scale factor applied to the game display as a
     whole.
 
-    size: The *original* size of each sprite in the given tileset.
+    size: The *original* size of each sprite in the given tileset, in
+    pixels.
 
     window: The window used to display the game.
 

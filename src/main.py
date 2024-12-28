@@ -12,20 +12,12 @@ ienv = image_env.ImageEnv(win_width=128,
                           scale=2, size=16)
 
 window = ienv.window
+tiles = image_env.Tiles(data_dir, "ff_castle.png", ienv)
 
-tileset_info = ienv.load_image(data_dir, "ff_castle.png")
-
-stairs_down = ienv.load_tile(image_env.TileDef.STAIRS_DOWN,
-                             tileset_info)
-
-stairs_up = ienv.load_tile(image_env.TileDef.STAIRS_UP,
-                           tileset_info)
-
-treasure = ienv.load_tile(image_env.TileDef.TREASURE,
-                          tileset_info)
-
-pillar = ienv.load_tile(image_env.TileDef.PILLAR,
-                        tileset_info)
+stairs_down = tiles.load(image_env.TileDef.STAIRS_DOWN)
+stairs_up = tiles.load(image_env.TileDef.STAIRS_UP)
+treasure = tiles.load(image_env.TileDef.TREASURE)
+pillar = tiles.load(image_env.TileDef.PILLAR)
 
 window.blit(stairs_down.image, (ienv.size, ienv.size))
 window.blit(stairs_up.image, (2 * ienv.size, 3 * ienv.size))

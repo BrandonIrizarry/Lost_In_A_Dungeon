@@ -42,22 +42,6 @@ class ImageEnv:
         self.window = pg.display.set_mode((win_width * scale,
                                            win_height * scale))
 
-    def load_tile(self, tile: TileDef, tileset_info: ImageInfo) -> ImageInfo:
-        """Load a single, discrete tile from a tileset.
-
-        """
-
-        x_tile, y_tile = tile.value
-
-        rect = pg.Rect(x_tile * self.size,
-                       y_tile * self.size,
-                       self.size,
-                       self.size)
-
-        image = tileset_info.image.subsurface(rect)
-
-        return ImageInfo(image, rect)
-
     def load_image(self, data_dir, name) -> ImageInfo:
         """Helper function for loading images."""
 
@@ -74,3 +58,27 @@ class ImageEnv:
             print(f"\n---> {e} :)")
 
         return ImageInfo(image, image.get_rect())
+
+
+class Tiles:
+    def __init__(self, data_dir: str,
+                 basename: str,
+                 ienv: ImageEnv):
+        self.info = ienv.load_image(data_dir, basename)
+        self.ienv = ienv
+
+    def load(self, tile_def: TileDef) -> ImageInfo:
+        """Load a single, discrete, tile from the 'info' field.
+
+        """
+        x_tile, y_tile = tile_def.value
+        size = self.ienv.size
+
+        rect = pg.Rect(x_tile * size,
+                       y_tile * size,
+                       size,
+                       size)
+
+        image = self.info.image.subsurface(rect)
+
+        return ImageInfo(image, rect)

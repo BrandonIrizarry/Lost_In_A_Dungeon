@@ -37,10 +37,10 @@ def load_image(name, scale=1) -> ImageInfo:
     return ImageInfo(image, image.get_rect())
 
 
-scale = 1
+scale = 2
 window = pg.display.set_mode((128 * scale, 128 * scale))
 tileset_info = load_image("ff_castle.png", scale)
-
+size = 16 * scale
 
 def load_tile(tile_name: str,
               tileset_info: ImageInfo,
@@ -54,9 +54,9 @@ def load_tile(tile_name: str,
     return ImageInfo(image, rect)
 
 
-tile_info = load_tile("stairs_down", tileset_info, 16)
+tile_info = load_tile("stairs_down", tileset_info, size)
 
-window.blit(tile_info.image, (16, 16))
+window.blit(tile_info.image, (size, size))
 
 
 def mainloop():

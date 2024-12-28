@@ -12,6 +12,9 @@ class ImageInfo:
 
 class TileDef(Enum):
     STAIRS_DOWN = pg.math.Vector2(5, 2)
+    STAIRS_UP = pg.math.Vector2(4, 2)
+    TREASURE = pg.math.Vector2(5, 3)
+    PILLAR = pg.math.Vector2(3, 2)
 
 
 class ImageEnv:

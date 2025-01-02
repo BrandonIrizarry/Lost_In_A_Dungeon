@@ -12,9 +12,9 @@ class TileDef(Enum):
 
 
 class Spritesheet:
-    def __init__(self, filename, size, scale_factor, color_key=None):
+    def __init__(self, filename, tile_len, scale_factor, color_key=None):
         self.sheet = pygame.image.load(filename).convert()
-        self.size = size
+        self.tile_len = tile_len
         self.scale_factor = scale_factor
         self.color_key = color_key
 
@@ -29,10 +29,10 @@ class Spritesheet:
         """
         x_tile, y_tile = tile_def.value
 
-        rect = pygame.Rect(x_tile * self.size,
-                           y_tile * self.size,
-                           self.size,
-                           self.size)
+        rect = pygame.Rect(x_tile * self.tile_len,
+                           y_tile * self.tile_len,
+                           self.tile_len,
+                           self.tile_len)
 
         image = self.sheet.subsurface(rect)
 

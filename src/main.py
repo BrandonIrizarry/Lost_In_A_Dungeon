@@ -10,9 +10,10 @@ class TileDef(Enum):
 
 
 class Spritesheet:
-    def __init__(self, filename, size):
+    def __init__(self, filename, size, scale_factor):
         self.sheet = pygame.image.load(filename).convert()
         self.size = size
+        self.scale_factor = scale_factor
 
     def get(self, tile_def: TileDef) -> pygame.Surface:
         """Fetch a single, discrete, tile from 'self.sheet'.
@@ -31,7 +32,7 @@ class Spritesheet:
                            self.size)
 
         image = self.sheet.subsurface(rect)
-        return image
+        return pygame.transform.scale_by(image, self.scale_factor)
 
 
 pygame.init()
@@ -45,7 +46,7 @@ SCALE_FACTOR = NUM_UNITS // NUM_TILES
 
 screen = pygame.display.set_mode((SCREEN_LEN, SCREEN_LEN))
 
-sheet = Spritesheet("../graphics/ff_castle.png", TILE_LEN)
+sheet = Spritesheet("../graphics/ff_castle.png", TILE_LEN, SCALE_FACTOR)
 
 
 def mainloop():
@@ -56,7 +57,6 @@ def mainloop():
 
     """
     floor = sheet.get(TileDef.STAIRS_DOWN)
-    floor = pygame.transform.scale_by(floor, SCALE_FACTOR)
     clock = pygame.time.Clock()
 
     while True:

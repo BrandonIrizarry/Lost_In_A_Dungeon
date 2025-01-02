@@ -15,7 +15,12 @@ class Spritesheet:
         self.size = size
 
     def get(self, tile_def: TileDef) -> pygame.Surface:
-        """Load a single, discrete, tile from the 'info' field.
+        """Fetch a single, discrete, tile from 'self.sheet'.
+
+        Return the tile as a pygame.Surface object.
+
+        It's assumed that each tile is a square of 'size'x'size'
+        pixels inside the spritesheet.
 
         """
         x_tile, y_tile = tile_def.value

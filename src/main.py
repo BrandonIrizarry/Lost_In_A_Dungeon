@@ -1,26 +1,56 @@
-import pygame as pg
-import os
+import pygame
 
 
-# Use platform independent file paths.
-main_dir = os.path.split(os.path.abspath(__file__))[0]
-data_dir = os.path.join(main_dir, "data")
+class Spritesheet:
+    def __init__(self, filename):
+        self.sheet = pygame.image.load(filename).convert()
+
+    def get(self,
+            x: int,
+            y: int,
+            width: int,
+            height: int) -> pygame.Surface:
+        """Fetch a sprite image.
+
+        In other words, return the Surface corresponding to the given
+        measured-out section of the spritesheet, in cookie-cutter
+        fashion.
+
+        """
+        sprite = pygame.Surface((width, height))
+        sprite.blit(self.sheet, (0, 0), (x, y, width, height))
+
+        return sprite
 
 
-def load_image(name, colorkey=None, scale=1):
-    """Helper function for loading images."""
+pygame.init()
+screen = pygame.display.set_mode((800, 500))
 
-    fullname = os.path.join(data_dir, name)
-    image = pg.image.load(fullname)
+sheet = Spritesheet("../graphics/ff_castle.png")
 
-    size_x, size_y = image.get_size()
-    size = (size_x * scale, size_y * scale)
-    image = pg.transform.scale(image, size).convert()
 
-    if colorkey is not None:
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
+def mainloop():
+    """The main pygame loop.
 
-        image.set_colorkey(colorkey, pg.RLEACCEL)
+    The loop is encapsulated inside this function so that we can easily
+    quit the game with a 'return' statement.
 
-    return image, image.get_rect()
+    """
+    clock = pygame.time.Clock()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+
+            if event.type == pygame.KEYDOWN:
+                match event.key:
+                    case pygame.K_ESCAPE:
+                        return
+
+        pygame.display.flip()
+        clock.tick(60)
+
+
+mainloop()
+pygame.quit()

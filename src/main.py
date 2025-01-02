@@ -76,9 +76,7 @@ def mainloop():
                         return
 
         for i in range(18):
-            index_x = cs.compute_index(i)
-            index_y = cs.compute_index(0)
-
+            index_x, index_y = cs.compute_coords(i, 0)
             screen.blit(floor, (index_x, index_y))
 
         xs, ys = cs.compute_coords(5, 5)

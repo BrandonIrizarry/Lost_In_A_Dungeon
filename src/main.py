@@ -35,9 +35,15 @@ class Spritesheet:
 
 
 pygame.init()
+
 TILE_LEN = 16
-screen = pygame.display.set_mode((30 * TILE_LEN,
-                                  30 * TILE_LEN))
+NUM_UNITS = 36
+SCREEN_LEN = NUM_UNITS * TILE_LEN
+NUM_TILES = 18
+SCALE_FACTOR = NUM_UNITS // NUM_TILES
+
+
+screen = pygame.display.set_mode((SCREEN_LEN, SCREEN_LEN))
 
 sheet = Spritesheet("../graphics/ff_castle.png", TILE_LEN)
 
@@ -50,6 +56,7 @@ def mainloop():
 
     """
     floor = sheet.get(TileDef.STAIRS_DOWN)
+    floor = pygame.transform.scale_by(floor, SCALE_FACTOR)
     clock = pygame.time.Clock()
 
     while True:
@@ -62,7 +69,8 @@ def mainloop():
                     case pygame.K_ESCAPE:
                         return
 
-        screen.blit(floor, (0, 0))
+        for i in range(18):
+            screen.blit(floor, (i * TILE_LEN * SCALE_FACTOR, 0))
 
         pygame.display.flip()
         clock.tick(60)

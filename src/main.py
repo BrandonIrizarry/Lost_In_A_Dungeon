@@ -12,10 +12,11 @@ class TileDef(Enum):
 
 
 class Spritesheet:
-    def __init__(self, filename, tile_len, scale_factor, color_key=None):
+    scale_factor = cs.SCALE_FACTOR
+    tile_len = cs.TILE_LEN
+
+    def __init__(self, filename, color_key=None):
         self.sheet = pygame.image.load(filename).convert()
-        self.tile_len = tile_len
-        self.scale_factor = scale_factor
         self.color_key = color_key
 
     def get(self, tile_def: TileDef) -> pygame.Surface:
@@ -44,12 +45,9 @@ class Spritesheet:
 
 pygame.init()
 screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
-terrain_sheet = Spritesheet("../graphics/ff_castle.png",
-                            cs.TILE_LEN,
-                            cs.SCALE_FACTOR)
+terrain_sheet = Spritesheet("../graphics/ff_castle.png")
+
 player_sheet = Spritesheet("../graphics/player.png",
-                           cs.TILE_LEN,
-                           cs.SCALE_FACTOR,
                            pygame.Color("#00288c"))
 
 

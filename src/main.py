@@ -8,13 +8,15 @@ class TileDef(Enum):
     STAIRS_UP = pygame.math.Vector2(4, 2)
     TREASURE = pygame.math.Vector2(5, 3)
     PILLAR = pygame.math.Vector2(3, 2)
+    PLAYER = pygame.math.Vector2(0, 0)
 
 
 class Spritesheet:
-    def __init__(self, filename, size, scale_factor):
+    def __init__(self, filename, size, scale_factor, color_key=None):
         self.sheet = pygame.image.load(filename).convert()
         self.size = size
         self.scale_factor = scale_factor
+        self.color_key = color_key
 
     def get(self, tile_def: TileDef) -> pygame.Surface:
         """Fetch a single, discrete, tile from 'self.sheet'.
@@ -33,12 +35,22 @@ class Spritesheet:
                            self.size)
 
         image = self.sheet.subsurface(rect)
+
+        if self.color_key:
+            image.set_colorkey(self.color_key)
+
         return pygame.transform.scale_by(image, self.scale_factor)
 
 
 pygame.init()
 screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
-sheet = Spritesheet("../graphics/ff_castle.png", cs.TILE_LEN, cs.SCALE_FACTOR)
+terrain_sheet = Spritesheet("../graphics/ff_castle.png",
+                            cs.TILE_LEN,
+                            cs.SCALE_FACTOR)
+player_sheet = Spritesheet("../graphics/player.png",
+                           cs.TILE_LEN,
+                           cs.SCALE_FACTOR,
+                           pygame.Color("#00288c"))
 
 
 def mainloop():
@@ -48,7 +60,9 @@ def mainloop():
     quit the game with a 'return' statement.
 
     """
-    floor = sheet.get(TileDef.STAIRS_DOWN)
+    floor = terrain_sheet.get(TileDef.STAIRS_DOWN)
+    player = player_sheet.get(TileDef.PLAYER)
+
     clock = pygame.time.Clock()
 
     while True:
@@ -66,6 +80,9 @@ def mainloop():
             index_y = cs.compute_index(0)
 
             screen.blit(floor, (index_x, index_y))
+
+        xs, ys = cs.compute_coords(5, 5)
+        screen.blit(player, (xs, ys))
 
         pygame.display.flip()
         clock.tick(60)

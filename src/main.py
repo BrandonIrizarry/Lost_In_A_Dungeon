@@ -14,24 +14,7 @@ class Spritesheet:
         self.sheet = pygame.image.load(filename).convert()
         self.size = size
 
-    def get(self,
-            x: int,
-            y: int,
-            width: int,
-            height: int) -> pygame.Surface:
-        """Fetch a sprite image.
-
-        In other words, return the Surface corresponding to the given
-        measured-out section of the spritesheet, in cookie-cutter
-        fashion.
-
-        """
-        sprite = pygame.Surface((width, height))
-        sprite.blit(self.sheet, (0, 0), (x, y, width, height))
-
-        return sprite
-
-    def load(self, tile_def: TileDef) -> pygame.Surface:
+    def get(self, tile_def: TileDef) -> pygame.Surface:
         """Load a single, discrete, tile from the 'info' field.
 
         """
@@ -59,7 +42,7 @@ def mainloop():
     quit the game with a 'return' statement.
 
     """
-    floor = sheet.load(TileDef.STAIRS_DOWN)
+    floor = sheet.get(TileDef.STAIRS_DOWN)
     clock = pygame.time.Clock()
 
     while True:

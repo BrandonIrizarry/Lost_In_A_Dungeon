@@ -1,5 +1,6 @@
 import pygame
 from enum import Enum
+import constants as cs
 
 
 class TileDef(Enum):
@@ -36,20 +37,9 @@ class Spritesheet:
 
 
 pygame.init()
+screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
+sheet = Spritesheet("../graphics/ff_castle.png", cs.TILE_LEN, cs.SCALE_FACTOR)
 
-TILE_LEN = 16
-NUM_UNITS = 36
-SCREEN_LEN = NUM_UNITS * TILE_LEN
-NUM_TILES = 18
-SCALE_FACTOR = NUM_UNITS // NUM_TILES
-
-
-screen = pygame.display.set_mode((SCREEN_LEN, SCREEN_LEN))
-
-sheet = Spritesheet("../graphics/ff_castle.png", TILE_LEN, SCALE_FACTOR)
-
-def compute_index(index: int) -> int:
-    return index * TILE_LEN * SCALE_FACTOR
 
 def mainloop():
     """The main pygame loop.
@@ -72,8 +62,8 @@ def mainloop():
                         return
 
         for i in range(18):
-            index_x = compute_index(i)
-            index_y = compute_index(0)
+            index_x = cs.compute_index(i)
+            index_y = cs.compute_index(0)
 
             screen.blit(floor, (index_x, index_y))
 

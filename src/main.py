@@ -48,6 +48,8 @@ screen = pygame.display.set_mode((SCREEN_LEN, SCREEN_LEN))
 
 sheet = Spritesheet("../graphics/ff_castle.png", TILE_LEN, SCALE_FACTOR)
 
+def compute_index(index: int) -> int:
+    return index * TILE_LEN * SCALE_FACTOR
 
 def mainloop():
     """The main pygame loop.
@@ -70,7 +72,10 @@ def mainloop():
                         return
 
         for i in range(18):
-            screen.blit(floor, (i * TILE_LEN * SCALE_FACTOR, 0))
+            index_x = compute_index(i)
+            index_y = compute_index(0)
+
+            screen.blit(floor, (index_x, index_y))
 
         pygame.display.flip()
         clock.tick(60)

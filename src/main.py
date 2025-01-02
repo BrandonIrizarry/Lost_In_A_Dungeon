@@ -35,9 +35,11 @@ class Spritesheet:
 
 
 pygame.init()
-screen = pygame.display.set_mode((800, 500))
+TILE_LEN = 16
+screen = pygame.display.set_mode((30 * TILE_LEN,
+                                  30 * TILE_LEN))
 
-sheet = Spritesheet("../graphics/ff_castle.png", 16)
+sheet = Spritesheet("../graphics/ff_castle.png", TILE_LEN)
 
 
 def mainloop():

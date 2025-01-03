@@ -134,17 +134,17 @@ class Player(pygame.sprite.Sprite):
         self.image = down1
         self.rect = self.image.get_rect()
 
-    def update(self, dt, still):
+    def update(self, dt, dd, still):
         """The obligatory 'update' override.
 
         This in turn calls various private helper methods.
 
         """
 
-        self._handle_player_input()
+        self._handle_player_input(dd)
         self._animation_state(dt, still)
 
-    def _handle_player_input(self):
+    def _handle_player_input(self, dd):
         """Interface with the current keypress to determine a player
         action, and update the details of the player's state.
         """
@@ -152,16 +152,16 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_UP]:
             self.orientation = Orientation.UP
-            self.rect.y -= 1
+            self.rect.y -= dd
         elif keys[pygame.K_DOWN]:
             self.orientation = Orientation.DOWN
-            self.rect.y += 1
+            self.rect.y += dd
         elif keys[pygame.K_LEFT]:
             self.orientation = Orientation.LEFT
-            self.rect.x -= 1
+            self.rect.x -= dd
         elif keys[pygame.K_RIGHT]:
             self.orientation = Orientation.RIGHT
-            self.rect.x += 1
+            self.rect.x += dd
 
     def _animation_state(self, dt, still):
         """Determine which spritesheet image to display, and which
@@ -192,6 +192,13 @@ class Player(pygame.sprite.Sprite):
         self.image = walk[int(self.index)]
 
 
+class Pillar(pygame.sprite.Sprite):
+    def __init__(self, *groups):
+        super().__init__(*groups)
+
+
+
+
 def display(screen, what, x, y):
     """Scale the given coordinates before blitting 'what' onto
     'screen'.
@@ -211,6 +218,11 @@ player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 
 
+
+pillar_group: pygame.sprite.Group = pygame.sprite.Group()
+
+
+
 def mainloop():
     """The main pygame loop.
 
@@ -221,6 +233,7 @@ def mainloop():
     pillar = sheet.get(TileDef.PILLAR)
     clock = pygame.time.Clock()
     dt = 0
+    dd = 0
     still = False
 
     while True:
@@ -241,6 +254,7 @@ def mainloop():
             if keys[pygame.K_UP] or keys[pygame.K_DOWN]\
                or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
                 still = False
+                dd = 1
 
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
@@ -255,7 +269,7 @@ def mainloop():
             display(screen, pillar, cs.NUM_TILES - 1, i)
 
         player_group.draw(screen)
-        player_group.update(dt, still)
+        player_group.update(dt, dd, still)
 
         pygame.display.flip()
 

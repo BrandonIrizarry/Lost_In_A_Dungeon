@@ -64,6 +64,39 @@ class Spritesheet:
         return pygame.transform.scale_by(image, cs.SCALE_FACTOR)
 
 
+class Player(pygame.sprite.Sprite):
+    def __init__(self, spritesheet: Spritesheet):
+        super().__init__()
+        down1 = spritesheet.get(TileDef.PLAYER_DOWN_1)
+        down2 = spritesheet.get(TileDef.PLAYER_DOWN_2)
+        self.walk = [down1, down2]
+        self.index = 0
+
+        # Define the image and rect of this sprite.
+        self.image = down1
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        self._handle_player_input()
+        self._animation_state()
+
+    def _handle_player_input(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_UP]:
+            self.rect.y -= 1
+        elif keys[pygame.K_DOWN]:
+            self.rect.y += 1
+        elif keys[pygame.K_LEFT]:
+            self.rect.x -= 1
+        elif keys[pygame.K_RIGHT]:
+            self.rect.x += 1
+
+    def _animation_state(self):
+        self.index = (self.index + 1) % len(self.walk)
+        self.image = self.walk[self.index]
+
+
 def display(screen, what, x, y):
     xs, ys = cs.compute_coords(x, y)
 
@@ -73,6 +106,10 @@ def display(screen, what, x, y):
 pygame.init()
 screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
 sheet = Spritesheet("../graphics/spritesheet.png")
+
+player = Player(sheet)
+player_group = pygame.sprite.GroupSingle()
+player_group.add(player)
 
 
 def mainloop():
@@ -100,7 +137,8 @@ def mainloop():
         for i in range(18):
             display(screen, stairs, i, 0)
 
-        display(screen, player, 5, 5)
+        player_group.draw(screen)
+        player_group.update()
 
         pygame.display.flip()
         clock.tick(60)

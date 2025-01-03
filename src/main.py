@@ -218,8 +218,6 @@ def mainloop():
 
     """
     stairs = sheet.get(TileDef.STAIRS_DOWN)
-    player = sheet.get(TileDef.PLAYER_DOWN_1)
-
     clock = pygame.time.Clock()
     dt = 0
 

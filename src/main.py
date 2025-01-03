@@ -193,10 +193,13 @@ class Player(pygame.sprite.Sprite):
 
 
 class Pillar(pygame.sprite.Sprite):
-    def __init__(self, *groups):
+    def __init__(self, sheet: Spritesheet, x: int, y: int, *groups):
         super().__init__(*groups)
 
+        self.image = sheet.get(TileDef.PILLAR)
 
+        xs, ys = cs.compute_coords(x, y)
+        self.rect = self.image.get_rect(x=xs, y=ys)
 
 
 def display(screen, what, x, y):
@@ -217,10 +220,16 @@ player = Player(sheet)
 player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 
-
-
 pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 
+
+for i in range(cs.NUM_TILES):
+    Pillar(sheet, i, 0, pillar_group)
+    Pillar(sheet, i, cs.NUM_TILES, pillar_group)
+
+for i in range(1, cs.NUM_TILES - 1):
+    Pillar(sheet, 0, i, pillar_group)
+    Pillar(sheet, cs.NUM_TILES - 1, i, pillar_group)
 
 
 def mainloop():
@@ -254,20 +263,17 @@ def mainloop():
             if keys[pygame.K_UP] or keys[pygame.K_DOWN]\
                or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
                 still = False
-                dd = 1
+
+                if pygame.sprite.spritecollide(player_group.sprite, pillar_group, False):
+                    dd = 0
+                else:
+                    dd = 1
 
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
         screen.fill(pygame.Color("black"))
 
-        for i in range(cs.NUM_TILES):
-            display(screen, pillar, i, 0)
-            display(screen, pillar, i, cs.NUM_TILES - 1)
-
-        for i in range(1, cs.NUM_TILES - 1):
-            display(screen, pillar, 0, i)
-            display(screen, pillar, cs.NUM_TILES - 1, i)
-
+        pillar_group.draw(screen)
         player_group.draw(screen)
         player_group.update(dt, dd, still)
 

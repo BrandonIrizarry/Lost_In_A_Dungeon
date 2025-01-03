@@ -4,17 +4,39 @@ import constants as cs
 
 
 class TileDef(Enum):
-    STAIRS_DOWN = pygame.math.Vector2(5, 2)
-    STAIRS_UP = pygame.math.Vector2(4, 2)
-    TREASURE = pygame.math.Vector2(5, 3)
-    PILLAR = pygame.math.Vector2(3, 2)
-    PLAYER = pygame.math.Vector2(0, 0)
+    STAIRS_DOWN = (pygame.math.Vector2(5, 2), None)
+    STAIRS_UP = (pygame.math.Vector2(4, 2), None)
+    TREASURE = (pygame.math.Vector2(5, 3), None)
+    PILLAR = (pygame.math.Vector2(3, 2), None)
+
+    PLAYER_DOWN_1 = (pygame.math.Vector2(0, 8),
+                     pygame.Color("#00288c"))
+
+    PLAYER_DOWN_2 = (pygame.math.Vector2(1, 8),
+                     pygame.Color("#00288c"))
+
+    PLAYER_UP_1 = (pygame.math.Vector2(2, 8),
+                   pygame.Color("#00288c"))
+
+    PLAYER_UP_2 = (pygame.math.Vector2(3, 8),
+                   pygame.Color("#00288c"))
+
+    PLAYER_LEFT_1 = (pygame.math.Vector2(4, 8),
+                     pygame.Color("#00288c"))
+
+    PLAYER_LEFT_2 = (pygame.math.Vector2(5, 8),
+                     pygame.Color("#00288c"))
+
+    PLAYER_RIGHT_1 = (pygame.math.Vector2(6, 8),
+                      pygame.Color("#00288c"))
+
+    PLAYER_RIGHT_2 = (pygame.math.Vector2(7, 8),
+                      pygame.Color("#00288c"))
 
 
 class Spritesheet:
-    def __init__(self, filename, color_key=None):
+    def __init__(self, filename):
         self.sheet = pygame.image.load(filename).convert()
-        self.color_key = color_key
 
     def get(self, tile_def: TileDef) -> pygame.Surface:
         """Fetch a single, discrete, tile from 'self.sheet'.
@@ -25,7 +47,11 @@ class Spritesheet:
         pixels inside the spritesheet.
 
         """
-        x_tile, y_tile = tile_def.value
+        tile_data = tile_def.value
+
+        print(tile_data)
+        x_tile, y_tile = tile_data[0]
+        color_key = tile_data[1]
 
         rect = pygame.Rect(x_tile * cs.TILE_LEN,
                            y_tile * cs.TILE_LEN,
@@ -34,8 +60,8 @@ class Spritesheet:
 
         image = self.sheet.subsurface(rect)
 
-        if self.color_key:
-            image.set_colorkey(self.color_key)
+        if color_key:
+            image.set_colorkey(color_key)
 
         return pygame.transform.scale_by(image, cs.SCALE_FACTOR)
 
@@ -48,10 +74,7 @@ def display(screen, what, x, y):
 
 pygame.init()
 screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
-terrain_sheet = Spritesheet("../graphics/ff_castle.png")
-
-player_sheet = Spritesheet("../graphics/player.png",
-                           pygame.Color("#00288c"))
+sheet = Spritesheet("../graphics/spritesheet.png")
 
 
 def mainloop():
@@ -61,8 +84,8 @@ def mainloop():
     quit the game with a 'return' statement.
 
     """
-    floor = terrain_sheet.get(TileDef.STAIRS_DOWN)
-    player = player_sheet.get(TileDef.PLAYER)
+    floor = sheet.get(TileDef.STAIRS_DOWN)
+    player = sheet.get(TileDef.PLAYER_DOWN_1)
 
     clock = pygame.time.Clock()
 

@@ -4,6 +4,15 @@ import constants as cs
 
 
 class TileDef(Enum):
+    """Labels for each of the sprites used in this game.
+
+    A TileDef is a tuple whose first member is a pair of coordinates
+    into the spritesheet, and whose second member is the color_key
+    needed to display that sprite correctly.
+
+    Each tile is assumed to be 16x16 pixels.
+
+    """
     STAIRS_DOWN = (pygame.math.Vector2(5, 2), None)
     STAIRS_UP = (pygame.math.Vector2(4, 2), None)
     TREASURE = (pygame.math.Vector2(5, 3), None)
@@ -35,6 +44,13 @@ class TileDef(Enum):
 
 
 class Orientation(Enum):
+    """A set of states used to describe the physical orientation of a
+    sprite.
+
+    For example, if a sprite is facing up, it's described using
+    'Orientation.UP'.
+
+    """
     UP = auto()
     DOWN = auto()
     LEFT = auto()
@@ -42,6 +58,15 @@ class Orientation(Enum):
 
 
 class Spritesheet:
+    """Bundle a sprite sheet image together with a method for fetching
+    sprites.
+
+    Fields:
+
+    sheet: The image corresponding to the sprite sheet. This is loaded
+    once upon initialization.
+
+    """
     def __init__(self, filename):
         self.sheet = pygame.image.load(filename).convert()
 
@@ -72,6 +97,17 @@ class Spritesheet:
 
 
 class Player(pygame.sprite.Sprite):
+    """An obligatory definition of the human-controlled Player
+    sprite.
+
+    Other than 'image' and 'rect', many of the fields involve
+    controlling the player animation.
+
+    The class field 'ANIMATION_SPEED' is used for configuring how
+    quickly the player's motion animation is toggled.
+
+    """
+
     # Configure the player sprite using this variable.
     ANIMATION_SPEED = 5
 
@@ -99,10 +135,19 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self, dt):
+        """The obligatory 'update' override.
+
+        This in turn calls various private helper methods.
+
+        """
+
         self._handle_player_input()
         self._animation_state(dt)
 
     def _handle_player_input(self):
+        """Interface with the current keypress to determine a player
+        action, and update the details of the player's state.
+        """
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP]:
@@ -119,6 +164,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.x += 1
 
     def _animation_state(self, dt):
+        """Determine which spritesheet image to display, and which
+        toggle to use.
+
+        """
         walk = None
 
         match self.orientation:
@@ -143,6 +192,10 @@ class Player(pygame.sprite.Sprite):
 
 
 def display(screen, what, x, y):
+    """Scale the given coordinates before blitting 'what' onto
+    'screen'.
+
+    """
     xs, ys = cs.compute_coords(x, y)
 
     return screen.blit(what, (xs, ys))

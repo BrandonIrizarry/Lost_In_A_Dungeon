@@ -111,7 +111,7 @@ class Player(pygame.sprite.Sprite):
     # Configure the player sprite using this variable.
     ANIMATION_SPEED = 5
 
-    def __init__(self, spritesheet: Spritesheet):
+    def __init__(self, spritesheet: Spritesheet, x: int, y: int):
         super().__init__()
         down1 = spritesheet.get(TileDef.PLAYER_DOWN_1)
         down2 = spritesheet.get(TileDef.PLAYER_DOWN_2)
@@ -132,7 +132,9 @@ class Player(pygame.sprite.Sprite):
 
         # Define the image and rect of this sprite.
         self.image = down1
-        self.rect = self.image.get_rect()
+
+        xs, ys = cs.compute_coords(x, y)
+        self.rect = self.image.get_rect(x=xs, y=ys)
 
     def update(self, dt, dd, still):
         """The obligatory 'update' override.
@@ -216,7 +218,7 @@ pygame.init()
 screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
 sheet = Spritesheet("../graphics/spritesheet.png")
 
-player = Player(sheet)
+player = Player(sheet, 1, 1)
 player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 
@@ -239,7 +241,6 @@ def mainloop():
     quit the game with a 'return' statement.
 
     """
-    pillar = sheet.get(TileDef.PILLAR)
     clock = pygame.time.Clock()
     dt = 0
     dd = 0

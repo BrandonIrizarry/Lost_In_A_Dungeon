@@ -1,5 +1,5 @@
 import pygame
-from enum import Enum
+from enum import Enum, auto
 import constants as cs
 
 
@@ -32,6 +32,13 @@ class TileDef(Enum):
 
     PLAYER_RIGHT_2 = (pygame.math.Vector2(7, 8),
                       pygame.Color("#00288c"))
+
+
+class Orientation(Enum):
+    UP = auto()
+    DOWN = auto()
+    LEFT = auto()
+    RIGHT = auto()
 
 
 class Spritesheet:
@@ -72,7 +79,19 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         down1 = spritesheet.get(TileDef.PLAYER_DOWN_1)
         down2 = spritesheet.get(TileDef.PLAYER_DOWN_2)
-        self.walk = [down1, down2]
+        up1 = spritesheet.get(TileDef.PLAYER_UP_1)
+        up2 = spritesheet.get(TileDef.PLAYER_UP_2)
+        left1 = spritesheet.get(TileDef.PLAYER_LEFT_1)
+        left2 = spritesheet.get(TileDef.PLAYER_LEFT_2)
+        right1 = spritesheet.get(TileDef.PLAYER_RIGHT_1)
+        right2 = spritesheet.get(TileDef.PLAYER_RIGHT_2)
+
+        self.walk_down = [down1, down2]
+        self.walk_up = [up1, up2]
+        self.walk_left = [left1, left2]
+        self.walk_right = [right1, right2]
+        self.orientation = Orientation.DOWN
+
         self.index = 0
 
         # Define the image and rect of this sprite.
@@ -87,21 +106,40 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP]:
+            self.orientation = Orientation.UP
             self.rect.y -= 1
         elif keys[pygame.K_DOWN]:
+            self.orientation = Orientation.DOWN
             self.rect.y += 1
         elif keys[pygame.K_LEFT]:
+            self.orientation = Orientation.LEFT
             self.rect.x -= 1
         elif keys[pygame.K_RIGHT]:
+            self.orientation = Orientation.RIGHT
             self.rect.x += 1
 
     def _animation_state(self, dt):
+        walk = None
+
+        match self.orientation:
+            case Orientation.UP:
+                walk = self.walk_up
+            case Orientation.DOWN:
+                walk = self.walk_down
+            case Orientation.LEFT:
+                walk = self.walk_left
+            case Orientation.RIGHT:
+                walk = self.walk_right
+
+        if walk is None:
+            raise Exception("'walk' is never set")
+
         self.index += self.ANIMATION_SPEED * dt
 
-        if self.index >= len(self.walk):
+        if self.index >= len(walk):
             self.index = 0
 
-        self.image = self.walk[int(self.index)]
+        self.image = walk[int(self.index)]
 
 
 def display(screen, what, x, y):

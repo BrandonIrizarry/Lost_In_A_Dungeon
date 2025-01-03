@@ -218,7 +218,7 @@ def mainloop():
     quit the game with a 'return' statement.
 
     """
-    stairs = sheet.get(TileDef.STAIRS_DOWN)
+    pillar = sheet.get(TileDef.PILLAR)
     clock = pygame.time.Clock()
     dt = 0
     still = False
@@ -246,8 +246,13 @@ def mainloop():
         # leaving streaks.
         screen.fill(pygame.Color("black"))
 
-        for i in range(18):
-            display(screen, stairs, i, 0)
+        for i in range(cs.NUM_TILES):
+            display(screen, pillar, i, 0)
+            display(screen, pillar, i, cs.NUM_TILES - 1)
+
+        for i in range(1, cs.NUM_TILES - 1):
+            display(screen, pillar, 0, i)
+            display(screen, pillar, cs.NUM_TILES - 1, i)
 
         player_group.draw(screen)
         player_group.update(dt, still)

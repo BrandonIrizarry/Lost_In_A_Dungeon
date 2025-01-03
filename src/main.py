@@ -204,16 +204,6 @@ class Pillar(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=xs, y=ys)
 
 
-def display(screen, what, x, y):
-    """Scale the given coordinates before blitting 'what' onto
-    'screen'.
-
-    """
-    xs, ys = cs.compute_coords(x, y)
-
-    return screen.blit(what, (xs, ys))
-
-
 pygame.init()
 screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
 sheet = Spritesheet("../graphics/spritesheet.png")

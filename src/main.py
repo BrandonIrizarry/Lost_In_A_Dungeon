@@ -263,10 +263,7 @@ def mainloop():
                or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
                 still = False
 
-        if pygame.sprite.spritecollide(player_group.sprite, pillar_group, False):
-            collide = True
-        else:
-            collide = False
+        collide = pygame.sprite.spritecollide(player_group.sprite, pillar_group, False)
 
         # Important: this prevents moving, animated sprites from
         # leaving streaks.

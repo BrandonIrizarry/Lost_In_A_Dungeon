@@ -136,20 +136,28 @@ class Player(pygame.sprite.Sprite):
         xs, ys = cs.compute_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
 
-    def update(self, dt, still):
+    def update(self, dt, still, collide):
         """The obligatory 'update' override.
 
         This in turn calls various private helper methods.
 
         """
 
-        self._handle_player_input()
+        self._handle_player_input(collide)
         self._animation_state(dt, still)
 
-    def _handle_player_input(self):
+    def _handle_player_input(self, collide):
         """Interface with the current keypress to determine a player
         action, and update the details of the player's state.
         """
+
+        if collide:
+            xs, ys = cs.compute_coords(1, 1)
+            self.rect.x = xs
+            self.rect.y = ys
+
+            return
+
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP]:
@@ -234,6 +242,7 @@ def mainloop():
     clock = pygame.time.Clock()
     dt = 0
     still = False
+    collide = False
 
     while True:
         for event in pygame.event.get():
@@ -254,13 +263,18 @@ def mainloop():
                or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
                 still = False
 
+        if pygame.sprite.spritecollide(player_group.sprite, pillar_group, False):
+            collide = True
+        else:
+            collide = False
+
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
         screen.fill(pygame.Color("black"))
 
         pillar_group.draw(screen)
         player_group.draw(screen)
-        player_group.update(dt, still)
+        player_group.update(dt, still, collide)
 
         pygame.display.flip()
 

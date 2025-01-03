@@ -48,8 +48,6 @@ class Spritesheet:
 
         """
         tile_data = tile_def.value
-
-        print(tile_data)
         x_tile, y_tile = tile_data[0]
         color_key = tile_data[1]
 

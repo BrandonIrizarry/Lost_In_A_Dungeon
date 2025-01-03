@@ -134,7 +134,7 @@ class Player(pygame.sprite.Sprite):
         self.image = down1
         self.rect = self.image.get_rect()
 
-    def update(self, dt):
+    def update(self, dt, still):
         """The obligatory 'update' override.
 
         This in turn calls various private helper methods.
@@ -142,7 +142,7 @@ class Player(pygame.sprite.Sprite):
         """
 
         self._handle_player_input()
-        self._animation_state(dt)
+        self._animation_state(dt, still)
 
     def _handle_player_input(self):
         """Interface with the current keypress to determine a player
@@ -163,7 +163,7 @@ class Player(pygame.sprite.Sprite):
             self.orientation = Orientation.RIGHT
             self.rect.x += 1
 
-    def _animation_state(self, dt):
+    def _animation_state(self, dt, still):
         """Determine which spritesheet image to display, and which
         toggle to use.
 
@@ -183,10 +183,11 @@ class Player(pygame.sprite.Sprite):
         if walk is None:
             raise Exception("'walk' is never set")
 
-        self.index += self.ANIMATION_SPEED * dt
+        if not still:
+            self.index += self.ANIMATION_SPEED * dt
 
-        if self.index >= len(walk):
-            self.index = 0
+            if self.index >= len(walk):
+                self.index = 0
 
         self.image = walk[int(self.index)]
 
@@ -220,6 +221,7 @@ def mainloop():
     stairs = sheet.get(TileDef.STAIRS_DOWN)
     clock = pygame.time.Clock()
     dt = 0
+    still = False
 
     while True:
         for event in pygame.event.get():
@@ -231,6 +233,15 @@ def mainloop():
                     case pygame.K_ESCAPE:
                         return
 
+            if event.type == pygame.KEYUP:
+                still = True
+
+            keys = pygame.key.get_pressed()
+
+            if keys[pygame.K_UP] or keys[pygame.K_DOWN]\
+               or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
+                still = False
+
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
         screen.fill(pygame.Color("black"))
@@ -239,7 +250,7 @@ def mainloop():
             display(screen, stairs, i, 0)
 
         player_group.draw(screen)
-        player_group.update(dt)
+        player_group.update(dt, still)
 
         pygame.display.flip()
 

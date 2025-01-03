@@ -206,7 +206,7 @@ screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
 sheet = Spritesheet("../graphics/spritesheet.png")
 
 player = Player(sheet)
-player_group = pygame.sprite.GroupSingle()
+player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 
 

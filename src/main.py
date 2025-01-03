@@ -134,6 +134,10 @@ def mainloop():
                     case pygame.K_ESCAPE:
                         return
 
+        # Important: this prevents moving, animated sprites from
+        # leaving streaks.
+        screen.fill(pygame.Color("black"))
+
         for i in range(18):
             display(screen, stairs, i, 0)
 

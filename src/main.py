@@ -76,9 +76,9 @@ class Player(pygame.sprite.Sprite):
         self.image = down1
         self.rect = self.image.get_rect()
 
-    def update(self):
+    def update(self, dt):
         self._handle_player_input()
-        self._animation_state()
+        self._animation_state(dt)
 
     def _handle_player_input(self):
         keys = pygame.key.get_pressed()
@@ -92,9 +92,13 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_RIGHT]:
             self.rect.x += 1
 
-    def _animation_state(self):
-        self.index = (self.index + 1) % len(self.walk)
-        self.image = self.walk[self.index]
+    def _animation_state(self, dt):
+        self.index += dt
+
+        if self.index >= len(self.walk):
+            self.index = 0
+
+        self.image = self.walk[int(self.index)]
 
 
 def display(screen, what, x, y):
@@ -123,6 +127,7 @@ def mainloop():
     player = sheet.get(TileDef.PLAYER_DOWN_1)
 
     clock = pygame.time.Clock()
+    dt = 0
 
     while True:
         for event in pygame.event.get():
@@ -142,10 +147,11 @@ def mainloop():
             display(screen, stairs, i, 0)
 
         player_group.draw(screen)
-        player_group.update()
+        player_group.update(dt)
 
         pygame.display.flip()
-        clock.tick(60)
+
+        dt = clock.tick(60) / 1000
 
 
 mainloop()

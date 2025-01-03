@@ -133,8 +133,11 @@ class Player(pygame.sprite.Sprite):
         # Define the image and rect of this sprite.
         self.image = down1
 
-        xs, ys = cs.compute_coords(x, y)
+        xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
+
+        self.x_prev = self.rect.x
+        self.y_prev = self.rect.y
 
     def update(self, dt, still, collide):
         """The obligatory 'update' override.
@@ -151,13 +154,6 @@ class Player(pygame.sprite.Sprite):
         action, and update the details of the player's state.
         """
 
-        if collide:
-            xs, ys = cs.compute_coords(1, 1)
-            self.rect.x = xs
-            self.rect.y = ys
-
-            return
-
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP]:
@@ -172,6 +168,25 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_RIGHT]:
             self.orientation = Orientation.RIGHT
             self.rect.x += 1
+
+        if collide:
+            dv = pygame.math.Vector2(0, 0)
+
+            match self.orientation:
+                case Orientation.UP:
+                    dv.y = -1
+                case Orientation.DOWN:
+                    dv.y = 1
+                case Orientation.LEFT:
+                    dv.x = -1
+                case Orientation.RIGHT:
+                    dv.x = 1
+
+            self.rect.x = self.x_prev - 5 * dv.x
+            self.rect.y = self.y_prev - 5 * dv.y
+        else:
+            self.x_prev = self.rect.x
+            self.y_prev = self.rect.y
 
     def _animation_state(self, dt, still):
         """Determine which spritesheet image to display, and which
@@ -208,7 +223,7 @@ class Pillar(pygame.sprite.Sprite):
 
         self.image = sheet.get(TileDef.PILLAR)
 
-        xs, ys = cs.compute_coords(x, y)
+        xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
 
 

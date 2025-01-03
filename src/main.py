@@ -136,17 +136,17 @@ class Player(pygame.sprite.Sprite):
         xs, ys = cs.compute_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
 
-    def update(self, dt, dd, still):
+    def update(self, dt, still):
         """The obligatory 'update' override.
 
         This in turn calls various private helper methods.
 
         """
 
-        self._handle_player_input(dd)
+        self._handle_player_input()
         self._animation_state(dt, still)
 
-    def _handle_player_input(self, dd):
+    def _handle_player_input(self):
         """Interface with the current keypress to determine a player
         action, and update the details of the player's state.
         """
@@ -154,16 +154,16 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_UP]:
             self.orientation = Orientation.UP
-            self.rect.y -= dd
+            self.rect.y -= 1
         elif keys[pygame.K_DOWN]:
             self.orientation = Orientation.DOWN
-            self.rect.y += dd
+            self.rect.y += 1
         elif keys[pygame.K_LEFT]:
             self.orientation = Orientation.LEFT
-            self.rect.x -= dd
+            self.rect.x -= 1
         elif keys[pygame.K_RIGHT]:
             self.orientation = Orientation.RIGHT
-            self.rect.x += dd
+            self.rect.x += 1
 
     def _animation_state(self, dt, still):
         """Determine which spritesheet image to display, and which
@@ -233,7 +233,6 @@ def mainloop():
     """
     clock = pygame.time.Clock()
     dt = 0
-    dd = 0
     still = False
 
     while True:
@@ -255,18 +254,13 @@ def mainloop():
                or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
                 still = False
 
-                if pygame.sprite.spritecollide(player_group.sprite, pillar_group, False):
-                    dd = 0
-                else:
-                    dd = 1
-
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
         screen.fill(pygame.Color("black"))
 
         pillar_group.draw(screen)
         player_group.draw(screen)
-        player_group.update(dt, dd, still)
+        player_group.update(dt, still)
 
         pygame.display.flip()
 

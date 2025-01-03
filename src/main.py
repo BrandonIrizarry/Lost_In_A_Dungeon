@@ -65,6 +65,9 @@ class Spritesheet:
 
 
 class Player(pygame.sprite.Sprite):
+    # Configure the player sprite using this variable.
+    ANIMATION_SPEED = 5
+
     def __init__(self, spritesheet: Spritesheet):
         super().__init__()
         down1 = spritesheet.get(TileDef.PLAYER_DOWN_1)
@@ -93,7 +96,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x += 1
 
     def _animation_state(self, dt):
-        self.index += dt
+        self.index += self.ANIMATION_SPEED * dt
 
         if self.index >= len(self.walk):
             self.index = 0

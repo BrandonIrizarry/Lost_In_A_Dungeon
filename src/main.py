@@ -84,7 +84,7 @@ def mainloop():
     quit the game with a 'return' statement.
 
     """
-    floor = sheet.get(TileDef.STAIRS_DOWN)
+    stairs = sheet.get(TileDef.STAIRS_DOWN)
     player = sheet.get(TileDef.PLAYER_DOWN_1)
 
     clock = pygame.time.Clock()
@@ -100,7 +100,7 @@ def mainloop():
                         return
 
         for i in range(18):
-            display(screen, floor, i, 0)
+            display(screen, stairs, i, 0)
 
         display(screen, player, 5, 5)
 

@@ -43,6 +43,12 @@ class Spritesheet:
         return pygame.transform.scale_by(image, self.scale_factor)
 
 
+def display(screen, what, x, y):
+    xs, ys = cs.compute_coords(x, y)
+
+    return screen.blit(what, (xs, ys))
+
+
 pygame.init()
 screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
 terrain_sheet = Spritesheet("../graphics/ff_castle.png")
@@ -74,11 +80,9 @@ def mainloop():
                         return
 
         for i in range(18):
-            index_x, index_y = cs.compute_coords(i, 0)
-            screen.blit(floor, (index_x, index_y))
+            display(screen, floor, i, 0)
 
-        xs, ys = cs.compute_coords(5, 5)
-        screen.blit(player, (xs, ys))
+        display(screen, player, 5, 5)
 
         pygame.display.flip()
         clock.tick(60)

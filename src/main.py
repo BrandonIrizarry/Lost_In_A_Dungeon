@@ -240,7 +240,7 @@ pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 
 for i in range(cs.NUM_TILES):
     Pillar(sheet, i, 0, pillar_group)
-    Pillar(sheet, i, cs.NUM_TILES, pillar_group)
+    Pillar(sheet, i, cs.NUM_TILES - 1, pillar_group)
 
 for i in range(1, cs.NUM_TILES - 1):
     Pillar(sheet, 0, i, pillar_group)

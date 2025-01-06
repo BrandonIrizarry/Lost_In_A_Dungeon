@@ -4,10 +4,6 @@ NUM_TILES_X = 18
 NUM_TILES_Y = 18
 
 
-def compute_index(index: int) -> int:
-    return index * TILE_LEN * SCALE_FACTOR
-
-
 def compute_pixel_coords(x_grid: int, y_grid: int) -> tuple[int, int]:
     """Return inputs scaled to pixel units, appropriate for display on
     the pygame screen."""

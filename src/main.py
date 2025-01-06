@@ -239,14 +239,15 @@ player_group.add(player)
 
 pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 
-
+# Draw pillars in top and bottom rows.
 for i in range(cs.NUM_TILES_X):
     Pillar(sheet, i, 0, pillar_group)
-    Pillar(sheet, i, cs.NUM_TILES_X - 1, pillar_group)
+    Pillar(sheet, i, cs.NUM_TILES_Y - 1, pillar_group)
 
+# Draw pillars in left and right columns.
 for i in range(1, cs.NUM_TILES_Y - 1):
     Pillar(sheet, 0, i, pillar_group)
-    Pillar(sheet, cs.NUM_TILES_Y - 1, i, pillar_group)
+    Pillar(sheet, cs.NUM_TILES_X - 1, i, pillar_group)
 
 
 def mainloop():

@@ -228,7 +228,7 @@ class Pillar(pygame.sprite.Sprite):
 
 
 pygame.init()
-screen = pygame.display.set_mode((cs.SCREEN_LEN, cs.SCREEN_LEN))
+screen = pygame.display.set_mode((cs.SCREEN_LEN_X, cs.SCREEN_LEN_Y))
 sheet = Spritesheet("../graphics/spritesheet.png")
 
 player = Player(sheet, 1, 1)
@@ -238,13 +238,13 @@ player_group.add(player)
 pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 
 
-for i in range(cs.NUM_TILES):
+for i in range(cs.NUM_TILES_X):
     Pillar(sheet, i, 0, pillar_group)
-    Pillar(sheet, i, cs.NUM_TILES - 1, pillar_group)
+    Pillar(sheet, i, cs.NUM_TILES_X - 1, pillar_group)
 
-for i in range(1, cs.NUM_TILES - 1):
+for i in range(1, cs.NUM_TILES_Y - 1):
     Pillar(sheet, 0, i, pillar_group)
-    Pillar(sheet, cs.NUM_TILES - 1, i, pillar_group)
+    Pillar(sheet, cs.NUM_TILES_Y - 1, i, pillar_group)
 
 
 def mainloop():

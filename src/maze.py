@@ -102,6 +102,12 @@ class Grid:
 
 
     def __repr__(self):
+        """Return a string representation of the grid.
+
+        The ith column of the grid corresponds to the ith row of the
+        representation.
+
+        """
         buffer = []
 
         for column in self.grid:
@@ -114,7 +120,7 @@ class Grid:
 
         return "\n".join(buffer)
 
-grid = Grid(4, 4)
+grid = Grid(10, 10)
 
 grid.tour()
 

@@ -228,7 +228,9 @@ class Pillar(pygame.sprite.Sprite):
 
 
 pygame.init()
-screen = pygame.display.set_mode((cs.SCREEN_LEN_X, cs.SCREEN_LEN_Y))
+
+screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
+screen = pygame.display.set_mode(screen_dimensions)
 sheet = Spritesheet("../graphics/spritesheet.png")
 
 player = Player(sheet, 1, 1)

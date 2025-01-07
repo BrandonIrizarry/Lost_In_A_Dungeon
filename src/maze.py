@@ -159,10 +159,12 @@ class Grid:
         """
         buffer = []
 
-        for column in self.grid:
+        for i in range(self.height):
             subbuffer = []
 
-            for cell in column:
+            for j in range(self.width):
+                cell = self.grid[j][i]
+
                 subbuffer.append(str(cell))
 
             buffer.append(" ".join(subbuffer))

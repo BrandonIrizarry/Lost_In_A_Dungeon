@@ -319,7 +319,17 @@ def mainloop():
 
         pillar_group.draw(screen)
         player_group.draw(screen)
-        player_group.update(dt, dx, dy)
+
+        tentative = player_group.sprite.rect.move(dx, dy)
+
+        update = True
+
+        for pillar in pillar_group:
+            if tentative.colliderect(pillar.rect):
+                update = False
+
+        if update:
+            player_group.update(dt, dx, dy)
 
         pygame.display.flip()
 

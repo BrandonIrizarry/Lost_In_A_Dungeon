@@ -46,6 +46,8 @@ class TileDef(Enum):
     PLAYER_RIGHT_2 = (pygame.math.Vector2(7, 8),
                       pygame.Color("#00288c"))
 
+    FLOOR = (pygame.math.Vector2(3, 0), None)
+
 
 class Orientation(Enum):
     """A set of states used to describe the physical orientation of a
@@ -210,6 +212,16 @@ class Pillar(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=xs, y=ys)
 
 
+class Floor(pygame.sprite.Sprite):
+    def __init__(self, sheet: Spritesheet, x: int, y: int, *groups):
+        super().__init__(*groups)
+
+        self.image = sheet.get(TileDef.FLOOR)
+
+        xs, ys = cs.compute_pixel_coords(x, y)
+        self.rect = self.image.get_rect(x=xs, y=ys)
+
+
 pygame.init()
 
 grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
@@ -224,6 +236,7 @@ player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 
 pillar_group: pygame.sprite.Group = pygame.sprite.Group()
+floor_group: pygame.sprite.Group = pygame.sprite.Group()
 
 
 def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
@@ -273,6 +286,13 @@ for x in range(cs.GRID_X):
 
 for x, y in all_projections:
     Pillar(sheet, x, y, pillar_group)
+
+
+# Add the floor graphics.
+for x in range(cs.NUM_TILES_X):
+    for y in range(cs.NUM_TILES_Y):
+        if (x, y) not in all_projections:
+            Floor(sheet, x, y, floor_group)
 
 
 def check_move(dx, dy, player_group, pillar_group) -> bool:
@@ -334,6 +354,7 @@ def mainloop():
         screen.fill(pygame.Color("black"))
 
         pillar_group.draw(screen)
+        floor_group.draw(screen)
         player_group.draw(screen)
 
         move_is_permitted = check_move(dx, dy, player_group, pillar_group)

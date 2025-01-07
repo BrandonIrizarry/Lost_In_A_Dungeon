@@ -18,6 +18,7 @@ class Cell(Flag):
 
 type Point = tuple[int, int]
 
+
 def get_neighbors(x, y, xmax, ymax) -> list[Point]:
     """Return the list of taxicab neighbors of the given point, with
     bounds checking.
@@ -69,7 +70,6 @@ class Grid:
         start_x = random.randrange(self.width)
         start_y = random.randrange(self.height)
 
-
         # Initialize x and y for the following loop.
         x = start_x
         y = start_y
@@ -119,6 +119,7 @@ class Grid:
             buffer.append(" ".join(subbuffer))
 
         return "\n".join(buffer)
+
 
 grid = Grid(10, 10)
 

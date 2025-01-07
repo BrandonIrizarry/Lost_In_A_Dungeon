@@ -46,7 +46,7 @@ class TileDef(Enum):
     PLAYER_RIGHT_2 = (pygame.math.Vector2(7, 8),
                       pygame.Color("#00288c"))
 
-    FLOOR = (pygame.math.Vector2(3, 0), None)
+    FLOOR = (pygame.math.Vector2(6, 1), None)
 
 
 class Orientation(Enum):

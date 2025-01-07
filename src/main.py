@@ -277,12 +277,18 @@ def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
     return targets
 
 
-print(grid.grid[2][3])
-projection = compute_cell_projection(grid, 2, 3)
+# Use a set, so that we can remove duplicates (we don't add a pillar
+# twice to a given board position.)
+all_projections = set()
 
-print(projection)
+for x in range(cs.GRID_X):
+    for y in range(cs.GRID_Y):
+        projection = compute_cell_projection(grid, x, y)
 
-for x, y in projection:
+        for p in projection:
+            all_projections.add(p)
+
+for x, y in all_projections:
     Pillar(sheet, x, y, pillar_group)
 
 

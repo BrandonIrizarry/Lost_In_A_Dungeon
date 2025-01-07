@@ -1,6 +1,10 @@
 import pygame
 from enum import Enum, auto
 import constants as cs
+import maze
+
+
+type Point = tuple[int, int]
 
 
 class TileDef(Enum):
@@ -239,15 +243,43 @@ player_group.add(player)
 
 pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 
-# Draw pillars in top and bottom rows.
-for i in range(cs.NUM_TILES_X):
-    Pillar(sheet, i, 0, pillar_group)
-    Pillar(sheet, i, cs.NUM_TILES_Y - 1, pillar_group)
+# For now, try to embed a smaller grid inside the board we currently have.
+grid = maze.Grid(5, 5)
+grid.carve()
 
-# Draw pillars in left and right columns.
-for i in range(1, cs.NUM_TILES_Y - 1):
-    Pillar(sheet, 0, i, pillar_group)
-    Pillar(sheet, cs.NUM_TILES_X - 1, i, pillar_group)
+
+def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
+    """Determine where pillars will be drawn on the board based on a
+    given cell."""
+
+    # Pairs of coordinates where pillars will be drawn.
+    targets = []
+
+    cell = grid.grid[x][y]
+    xi, yi = 3 * x, 3 * y
+
+    if maze.Cell.UP in cell:
+        targets.extend([(xi + 1, yi), (xi + 2, yi)])
+
+    if maze.Cell.DOWN in cell:
+        targets.extend([(xi + 1, yi + 3), (xi + 2, yi + 3)])
+
+    if maze.Cell.LEFT in cell:
+        targets.extend([(xi, yi + 1), (xi, yi + 2)])
+
+    if maze.Cell.RIGHT in cell:
+        targets.extend([(xi + 3, yi + 1), (xi + 3, yi + 2)])
+
+    return targets
+
+
+print(grid.grid[2][3])
+projection = compute_cell_projection(grid, 2, 3)
+
+print(projection)
+
+for x, y in projection:
+    Pillar(sheet, x, y, pillar_group)
 
 
 def mainloop():

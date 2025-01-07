@@ -172,8 +172,9 @@ class Grid:
         return "\n".join(buffer)
 
 
-grid = Grid(5, 5)
+# Scratch work for sanity-testing.
+if __name__ == "__main__":
+    grid = Grid(5, 5)
+    grid.carve()
 
-grid.carve()
-
-print(grid)
+    print(grid)

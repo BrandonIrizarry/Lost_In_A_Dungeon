@@ -15,6 +15,12 @@ class Cell(Flag):
     LEFT = auto()
     RIGHT = auto()
 
+    def unvisited(self) -> bool:
+        return self == Cell(0)
+
+    def visited(self) -> bool:
+        return not self.unvisited()
+
 
 type Point = tuple[int, int]
 
@@ -112,6 +118,37 @@ class Grid:
 
                 x, y = new_x, new_y
 
+    def scan(self) -> Point | None:
+        """Find the first Point p such that:
+
+        1. The grid cell there is unvisited.
+        2. The grid cell is adjacent to a visited cell."""
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.grid[x][y].unvisited():
+                    for n in get_neighbors(x, y, self.width, self.height):
+                        xn, yn = n
+
+                        if self.grid[xn][yn].visited():
+                            return xn, yn
+
+        return None
+
+    def carve(self) -> None:
+        """Carve the maze path inside this grid.
+
+        This is the public, top-level method of this class."""
+
+        x, y = self.get_random_point()
+
+        while True:
+            self.tour(x, y)
+            point = self.scan()
+
+            if point is None:
+                break
+
+            x, y = point
 
     def __repr__(self):
         """Return a string representation of the grid.
@@ -133,9 +170,8 @@ class Grid:
         return "\n".join(buffer)
 
 
-grid = Grid(10, 10)
+grid = Grid(5, 5)
 
-x, y = grid.get_random_point()
-grid.tour(x, y)
+grid.carve()
 
 print(grid)

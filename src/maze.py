@@ -83,7 +83,11 @@ class Grid:
         y = y_start
 
         while True:
-            neighbors: list[Point] = get_neighbors(x, y, self.width, self.height)
+            neighbors: list[Point] = get_neighbors(x,
+                                                   y,
+                                                   self.width,
+                                                   self.height)
+
             neighbors = list(filter(self.not_yet_visited, neighbors))
 
             if neighbors == []:

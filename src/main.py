@@ -255,7 +255,10 @@ def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
     # Pairs of coordinates where pillars will be drawn.
     targets = []
 
-    cell = grid.grid[x][y]
+    # Compute the _inverse_ of a cell, that is, compute which sides
+    # should be closed off by pillars.
+    cell = ~grid.grid[x][y]
+
     xi, yi = 3 * x, 3 * y
 
     if maze.Cell.UP in cell:

@@ -140,20 +140,17 @@ class Player(pygame.sprite.Sprite):
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
 
-        self.x_prev = self.rect.x
-        self.y_prev = self.rect.y
-
-    def update(self, dt, still, collide):
+    def update(self, dt, still):
         """The obligatory 'update' override.
 
         This in turn calls various private helper methods.
 
         """
 
-        self._handle_player_input(collide)
+        self._handle_player_input()
         self._animation_state(dt, still)
 
-    def _handle_player_input(self, collide):
+    def _handle_player_input(self):
         """Interface with the current keypress to determine a player
         action, and update the details of the player's state.
         """
@@ -172,25 +169,6 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_RIGHT]:
             self.orientation = Orientation.RIGHT
             self.rect.x += 1
-
-        if collide:
-            dv = pygame.math.Vector2(0, 0)
-
-            match self.orientation:
-                case Orientation.UP:
-                    dv.y = -1
-                case Orientation.DOWN:
-                    dv.y = 1
-                case Orientation.LEFT:
-                    dv.x = -1
-                case Orientation.RIGHT:
-                    dv.x = 1
-
-            self.rect.x = self.x_prev - 5 * dv.x
-            self.rect.y = self.y_prev - 5 * dv.y
-        else:
-            self.x_prev = self.rect.x
-            self.y_prev = self.rect.y
 
     def _animation_state(self, dt, still):
         """Determine which spritesheet image to display, and which
@@ -306,7 +284,6 @@ def mainloop():
     clock = pygame.time.Clock()
     dt = 0
     still = False
-    collide = False
 
     while True:
         for event in pygame.event.get():
@@ -327,17 +304,13 @@ def mainloop():
                or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
                 still = False
 
-        collide = pygame.sprite.spritecollide(player_group.sprite,
-                                              pillar_group,
-                                              False)
-
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
         screen.fill(pygame.Color("black"))
 
         pillar_group.draw(screen)
         player_group.draw(screen)
-        player_group.update(dt, still, collide)
+        player_group.update(dt, still)
 
         pygame.display.flip()
 

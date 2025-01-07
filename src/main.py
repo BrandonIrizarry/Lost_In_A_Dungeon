@@ -140,35 +140,36 @@ class Player(pygame.sprite.Sprite):
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
 
-    def update(self, dt, still):
+    def update(self, dt, dx, dy):
         """The obligatory 'update' override.
 
         This in turn calls various private helper methods.
 
         """
 
-        self._handle_player_input()
+        self._handle_player_input(dx, dy)
+
+        still = dx == 0 and dy == 0
         self._animation_state(dt, still)
 
-    def _handle_player_input(self):
+    def _handle_player_input(self, dx, dy):
         """Interface with the current keypress to determine a player
         action, and update the details of the player's state.
         """
 
-        keys = pygame.key.get_pressed()
+        vector = (dx, dy)
 
-        if keys[pygame.K_UP]:
+        if vector == (0, -1):
             self.orientation = Orientation.UP
-            self.rect.y -= 1
-        elif keys[pygame.K_DOWN]:
+        elif vector == (0, 1):
             self.orientation = Orientation.DOWN
-            self.rect.y += 1
-        elif keys[pygame.K_LEFT]:
+        elif vector == (-1, 0):
             self.orientation = Orientation.LEFT
-            self.rect.x -= 1
-        elif keys[pygame.K_RIGHT]:
+        elif vector == (1, 0):
             self.orientation = Orientation.RIGHT
-            self.rect.x += 1
+
+        self.rect.x += dx
+        self.rect.y += dy
 
     def _animation_state(self, dt, still):
         """Determine which spritesheet image to display, and which
@@ -283,7 +284,10 @@ def mainloop():
     """
     clock = pygame.time.Clock()
     dt = 0
-    still = False
+
+    # Make sure these variables are defined over the scope of the
+    # entire while loop.
+    dx, dy = 0, 0
 
     while True:
         for event in pygame.event.get():
@@ -295,14 +299,19 @@ def mainloop():
                     case pygame.K_ESCAPE:
                         return
 
-            if event.type == pygame.KEYUP:
-                still = True
-
             keys = pygame.key.get_pressed()
 
-            if keys[pygame.K_UP] or keys[pygame.K_DOWN]\
-               or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
-                still = False
+            # Reset motion vector to 0 for this frame.
+            dx, dy = 0, 0
+
+            if keys[pygame.K_UP]:
+                dy = -1
+            elif keys[pygame.K_DOWN]:
+                dy = 1
+            elif keys[pygame.K_LEFT]:
+                dx = -1
+            elif keys[pygame.K_RIGHT]:
+                dx = 1
 
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
@@ -310,7 +319,7 @@ def mainloop():
 
         pillar_group.draw(screen)
         player_group.draw(screen)
-        player_group.update(dt, still)
+        player_group.update(dt, dx, dy)
 
         pygame.display.flip()
 

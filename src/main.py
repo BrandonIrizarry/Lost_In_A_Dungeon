@@ -262,6 +262,10 @@ def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
 
     xi, yi = 3 * x, 3 * y
 
+    # Add the four corners of the projection to 'targets', since these
+    # otherwise appear as gaps in the displayed maze.
+    targets.extend([(xi, yi), (xi + 3, yi), (xi, yi + 3), (xi + 3, yi + 3)])
+
     if maze.Cell.UP in cell:
         targets.extend([(xi + 1, yi), (xi + 2, yi)])
 

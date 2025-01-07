@@ -275,6 +275,22 @@ for x, y in all_projections:
     Pillar(sheet, x, y, pillar_group)
 
 
+def check_move(dx, dy, player_group, pillar_group) -> bool:
+    """Return True iff the player can perform the proposed move
+    without a collision.
+
+    """
+
+    # The tentative player position.
+    tentative = player_group.sprite.rect.move(dx, dy)
+
+    for pillar in pillar_group:
+        if tentative.colliderect(pillar.rect):
+            return False
+
+    return True
+
+
 def mainloop():
     """The main pygame loop.
 
@@ -320,17 +336,7 @@ def mainloop():
         pillar_group.draw(screen)
         player_group.draw(screen)
 
-        # The tentative player position.
-        tentative = player_group.sprite.rect.move(dx, dy)
-
-        # Whether we're going to let the player move into that square.
-        # If for example there's a pillar at that square, the player
-        # can't move into it.
-        move_is_permitted = True
-
-        for pillar in pillar_group:
-            if tentative.colliderect(pillar.rect):
-                move_is_permitted = False
+        move_is_permitted = check_move(dx, dy, player_group, pillar_group)
 
         if move_is_permitted:
             player_group.update(dt, dx, dy)

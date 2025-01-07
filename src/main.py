@@ -249,7 +249,9 @@ pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 
 def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
     """Determine where pillars will be drawn on the board based on a
-    given cell."""
+    given cell.
+
+    'x' and 'y' are coordinates inside the given grid."""
 
     # Pairs of coordinates where pillars will be drawn.
     targets = []

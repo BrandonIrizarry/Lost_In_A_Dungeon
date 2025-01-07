@@ -281,7 +281,9 @@ def mainloop():
                or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
                 still = False
 
-        collide = pygame.sprite.spritecollide(player_group.sprite, pillar_group, False)
+        collide = pygame.sprite.spritecollide(player_group.sprite,
+                                              pillar_group,
+                                              False)
 
         # Important: this prevents moving, animated sprites from
         # leaving streaks.

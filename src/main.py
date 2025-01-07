@@ -320,15 +320,19 @@ def mainloop():
         pillar_group.draw(screen)
         player_group.draw(screen)
 
+        # The tentative player position.
         tentative = player_group.sprite.rect.move(dx, dy)
 
-        update = True
+        # Whether we're going to let the player move into that square.
+        # If for example there's a pillar at that square, the player
+        # can't move into it.
+        move_is_permitted = True
 
         for pillar in pillar_group:
             if tentative.colliderect(pillar.rect):
-                update = False
+                move_is_permitted = False
 
-        if update:
+        if move_is_permitted:
             player_group.update(dt, dx, dy)
 
         pygame.display.flip()

@@ -1,7 +1,9 @@
 TILE_LEN = 16
 SCALE_FACTOR = 2
-NUM_TILES_X = 18
-NUM_TILES_Y = 18
+GRID_X = 5
+GRID_Y = 5
+NUM_TILES_X = 3 * GRID_X + 1
+NUM_TILES_Y = 3 * GRID_Y + 1
 
 
 def compute_pixel_coords(x_grid: int, y_grid: int) -> tuple[int, int]:

@@ -233,6 +233,9 @@ class Pillar(pygame.sprite.Sprite):
 
 pygame.init()
 
+grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
+grid.carve()
+
 screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
 screen = pygame.display.set_mode(screen_dimensions)
 sheet = Spritesheet("../graphics/spritesheet.png")
@@ -242,10 +245,6 @@ player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 
 pillar_group: pygame.sprite.Group = pygame.sprite.Group()
-
-# For now, try to embed a smaller grid inside the board we currently have.
-grid = maze.Grid(5, 5)
-grid.carve()
 
 
 def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:

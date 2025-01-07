@@ -149,12 +149,12 @@ class Player(pygame.sprite.Sprite):
 
         """
 
-        self._handle_player_input(dx, dy)
+        self._update_position(dx, dy)
 
         still = dx == 0 and dy == 0
         self._animation_state(dt, still)
 
-    def _handle_player_input(self, dx, dy):
+    def _update_position(self, dx, dy):
         """Interface with the current keypress to determine a player
         action, and update the details of the player's state.
         """

@@ -320,6 +320,12 @@ for x in range(cs.NUM_TILES_X):
 
 
 def get_next_player_move() -> Point | None:
+    """Move the player in the direction provided by the user.
+
+    If there is a blocked collision, don't allow the move.
+
+    """
+
     # Reset motion vector to 0 for this frame.
     dx, dy = 0, 0
 

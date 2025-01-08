@@ -1,5 +1,5 @@
 import pygame
-from enum import Enum, auto
+from enum import Enum
 import random
 import constants as cs
 import maze
@@ -72,20 +72,6 @@ class TileDef(Enum):
                        pygame.Color("#747474"))
 
     FLOOR = (pygame.math.Vector2(6, 1), None)
-
-
-class Orientation(Enum):
-    """A set of states used to describe the physical orientation of a
-    sprite.
-
-    For example, if a sprite is facing up, it's described using
-    'Orientation.UP'.
-
-    """
-    UP = auto()
-    DOWN = auto()
-    LEFT = auto()
-    RIGHT = auto()
 
 
 class Spritesheet:

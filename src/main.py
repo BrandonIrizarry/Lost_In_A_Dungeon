@@ -173,6 +173,37 @@ class MovingThing(pygame.sprite.Sprite):
             self.animate(dt, dx, dy)
 
 
+class Crawler(MovingThing):
+    """A subclass of MovingThing applicable to crawlers.
+
+    The only difference is in the implementation of 'update'.
+
+    """
+
+    def __init__(self, x: int, y: int, **animations):
+        super().__init__(x, y, **animations)
+        self.cooldown = 1.0
+        self.timer = self.cooldown
+        self.speed = 100
+        self.unit_velocity = cs.DOWN
+
+    def update(self, dt, obstacle_group):
+        self.timer -= dt
+
+        if self.timer <= 0:
+            self.unit_velocity = random.choice([cs.UP, cs.DOWN, cs.LEFT, cs.RIGHT])
+            self.timer = self.cooldown
+
+        velocity = Vector2(self.unit_velocity)
+        displacement = self.check_obstacle(velocity * self.speed * dt,
+                                           obstacle_group)
+
+        if displacement != pygame.math.Vector2(0, 0):
+            self.rect.move_ip(displacement)
+            dx, dy = self.unit_velocity
+            self.animate(dt, dx, dy)
+
+
 class Fixture(pygame.sprite.Sprite):
     """A class for describing a sprite not directly involved in
     gameplay. For example, they never move. Such a sprite may or may
@@ -238,13 +269,14 @@ for x in range(cs.NUM_TILES_X):
 
 
 # Add the crawlers.
-crawler = MovingThing(2, 2, **{
+crawler = Crawler(2, 2, **{
     "down": sheet.get_all([TileDef.CRAWLER_DOWN_1, TileDef.CRAWLER_DOWN_2]),
     "up": sheet.get_all([TileDef.CRAWLER_UP_1, TileDef.CRAWLER_UP_2]),
     "left": sheet.get_all([TileDef.CRAWLER_LEFT_1, TileDef.CRAWLER_LEFT_2]),
     "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1, TileDef.CRAWLER_RIGHT_2])
 })
 
+crawler_group.add(crawler)
 
 def get_next_crawler_move(crawler: MovingThing) -> Point:
     dx, dy = random.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])
@@ -288,6 +320,8 @@ def mainloop():
         crawler_group.draw(screen)
 
         player_group.update(dt, pillar_group)
+        crawler_group.update(dt, pillar_group)
+
         pygame.display.flip()
 
         dt = clock.tick(60) / 1000

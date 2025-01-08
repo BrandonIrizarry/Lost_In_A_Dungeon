@@ -132,62 +132,6 @@ class Spritesheet:
         return [self.get(tile_def) for tile_def in tile_defs]
 
 
-class Crawler(pygame.sprite.Sprite):
-    ANIMATION_SPEED = 5
-
-    def __init__(self, spritesheet: Spritesheet, x: int, y: int, *groups):
-        super().__init__(*groups)
-
-        down1 = spritesheet.get(TileDef.CRAWLER_DOWN_1)
-        down2 = spritesheet.get(TileDef.CRAWLER_DOWN_2)
-        up1 = spritesheet.get(TileDef.CRAWLER_UP_1)
-        up2 = spritesheet.get(TileDef.CRAWLER_UP_2)
-        left1 = spritesheet.get(TileDef.CRAWLER_LEFT_1)
-        left2 = spritesheet.get(TileDef.CRAWLER_LEFT_2)
-        right1 = spritesheet.get(TileDef.CRAWLER_RIGHT_1)
-        right2 = spritesheet.get(TileDef.CRAWLER_RIGHT_2)
-
-        self.walk_down = [down1, down2]
-        self.walk_up = [up1, up2]
-        self.walk_left = [left1, left2]
-        self.walk_right = [right1, right2]
-
-        self.index = 0
-        self.image = random.choice([up1, down1, left1, right1])
-
-        xs, ys = cs.compute_pixel_coords(x, y)
-        self.rect = self.image.get_rect(x=xs, y=ys)
-
-    def update(self, dt, dx, dy):
-        # Update position
-        self.rect.x += dx
-        self.rect.y += dy
-
-        # Update walking animation
-        vector = (dx, dy)
-
-        walk = None
-
-        if vector == (0, -1):
-            walk = self.walk_up
-        elif vector == (0, 1):
-            walk = self.walk_down
-        elif vector == (-1, 0):
-            walk = self.walk_left
-        elif vector == (1, 0):
-            walk = self.walk_right
-
-        if walk is None:
-            return
-
-        self.index += self.ANIMATION_SPEED * dt
-
-        if self.index >= len(walk):
-            self.index = 0
-
-        self.image = walk[int(self.index)]
-
-
 class MovingThing(pygame.sprite.Sprite):
     """An obligatory definition of the human-controlled Player
     sprite.
@@ -393,7 +337,7 @@ def get_next_player_move() -> Point:
     return dx, dy
 
 
-def get_next_crawler_move(crawler: Crawler) -> Point:
+def get_next_crawler_move(crawler: MovingThing) -> Point:
     dx, dy = random.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])
 
     tentative = crawler.rect.move(dx, dy)

@@ -180,21 +180,17 @@ class MovingThing(pygame.sprite.Sprite):
         self.image = self.walk[int(self.index)]
 
 
-class Pillar(pygame.sprite.Sprite):
-    def __init__(self, sheet: Spritesheet, x: int, y: int, *groups):
-        super().__init__(*groups)
+class Fixture(pygame.sprite.Sprite):
+    """A class for describing a sprite not directly involved in
+    gameplay. For example, they never move. Such a sprite may or may
+    not be collidable, but let the groups handle that.
 
-        self.image = sheet.get(TileDef.PILLAR)
+    """
 
-        xs, ys = cs.compute_pixel_coords(x, y)
-        self.rect = self.image.get_rect(x=xs, y=ys)
+    def __init__(self, x: int, y: int, image: pygame.Surface):
+        super().__init__()
 
-
-class Floor(pygame.sprite.Sprite):
-    def __init__(self, sheet: Spritesheet, x: int, y: int, *groups):
-        super().__init__(*groups)
-
-        self.image = sheet.get(TileDef.FLOOR)
+        self.image = image
 
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
@@ -271,14 +267,16 @@ for x in range(cs.GRID_X):
             all_projections.add(p)
 
 for x, y in all_projections:
-    Pillar(sheet, x, y, pillar_group)
+    pillar = Fixture(x, y, sheet.get(TileDef.PILLAR))
+    pillar_group.add(pillar)
 
 
 # Add the floor graphics.
 for x in range(cs.NUM_TILES_X):
     for y in range(cs.NUM_TILES_Y):
         if (x, y) not in all_projections:
-            Floor(sheet, x, y, floor_group)
+            floor = Fixture(x, y, sheet.get(TileDef.FLOOR))
+            floor_group.add(floor)
 
 
 # Add the crawlers.

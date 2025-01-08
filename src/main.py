@@ -164,6 +164,10 @@ class MovingThing(pygame.sprite.Sprite):
         displacement = self.check_obstacle(unit_velocity * self.speed * dt,
                                            obstacle_group)
 
+        # The displacement could be the zero vector, either because
+        # (dx, dy) is the zero tuple (because the user didn't press a
+        # key to move the player), or because the player encountered
+        # an obstacle blocking its path.
         if displacement != Vector2(0, 0):
             self.rect.move_ip(displacement)
             self.animate(dt, dx, dy)

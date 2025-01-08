@@ -126,6 +126,11 @@ class Spritesheet:
 
         return pygame.transform.scale_by(image, cs.SCALE_FACTOR)
 
+    def get_all(self, tile_defs: list[TileDef]) -> list[pygame.Surface]:
+        """Convert the given list of tile defs to a list of surfaces."""
+
+        return [self.get(tile_def) for tile_def in tile_defs]
+
 
 class Crawler(pygame.sprite.Sprite):
     ANIMATION_SPEED = 5
@@ -183,7 +188,7 @@ class Crawler(pygame.sprite.Sprite):
         self.image = walk[int(self.index)]
 
 
-class Player(pygame.sprite.Sprite):
+class MovingThing(pygame.sprite.Sprite):
     """An obligatory definition of the human-controlled Player
     sprite.
 
@@ -198,27 +203,19 @@ class Player(pygame.sprite.Sprite):
     # Configure the player sprite using this variable.
     ANIMATION_SPEED = 5
 
-    def __init__(self, spritesheet: Spritesheet, x: int, y: int):
+    def __init__(self, x: int, y: int, **animations):
         super().__init__()
-        down1 = spritesheet.get(TileDef.PLAYER_DOWN_1)
-        down2 = spritesheet.get(TileDef.PLAYER_DOWN_2)
-        up1 = spritesheet.get(TileDef.PLAYER_UP_1)
-        up2 = spritesheet.get(TileDef.PLAYER_UP_2)
-        left1 = spritesheet.get(TileDef.PLAYER_LEFT_1)
-        left2 = spritesheet.get(TileDef.PLAYER_LEFT_2)
-        right1 = spritesheet.get(TileDef.PLAYER_RIGHT_1)
-        right2 = spritesheet.get(TileDef.PLAYER_RIGHT_2)
 
-        self.walk_down = [down1, down2]
-        self.walk_up = [up1, up2]
-        self.walk_left = [left1, left2]
-        self.walk_right = [right1, right2]
+        self.walk_down = [animations["down"][0], animations["down"][1]]
+        self.walk_up = [animations["up"][0], animations["up"][1]]
+        self.walk_left = [animations["left"][0], animations["left"][1]]
+        self.walk_right = [animations["right"][0], animations["right"][1]]
         self.walk = self.walk_down
 
         self.index = 0
 
         # Define the image and rect of this sprite.
-        self.image = down1
+        self.image = self.walk_down[0]
 
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
@@ -282,7 +279,14 @@ screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
 screen = pygame.display.set_mode(screen_dimensions)
 sheet = Spritesheet("../graphics/spritesheet.png")
 
-player = Player(sheet, 1, 1)
+player = MovingThing(1, 1, **{
+    "down": sheet.get_all([TileDef.PLAYER_DOWN_1, TileDef.PLAYER_DOWN_2]),
+    "up": sheet.get_all([TileDef.PLAYER_UP_1, TileDef.PLAYER_UP_2]),
+    "left": sheet.get_all([TileDef.PLAYER_LEFT_1, TileDef.PLAYER_LEFT_2]),
+    "right": sheet.get_all([TileDef.PLAYER_RIGHT_1, TileDef.PLAYER_RIGHT_2])
+})
+
+
 player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 

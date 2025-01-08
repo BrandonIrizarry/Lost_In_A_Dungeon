@@ -319,7 +319,7 @@ for x in range(cs.NUM_TILES_X):
             Floor(sheet, x, y, floor_group)
 
 
-def get_next_player_move() -> Point | None:
+def get_next_player_move() -> Point:
     """Move the player in the direction provided by the user.
 
     If there is a blocked collision, don't allow the move.
@@ -345,7 +345,7 @@ def get_next_player_move() -> Point | None:
 
     for pillar in pillar_group:
         if tentative.colliderect(pillar.rect):
-            return None
+            return 0, 0
 
     return dx, dy
 
@@ -378,11 +378,8 @@ def mainloop():
         floor_group.draw(screen)
         player_group.draw(screen)
 
-        dplayer = get_next_player_move()
-
-        if dplayer is not None:
-            dx_player, dy_player = dplayer
-            player_group.update(dt, dx_player, dy_player)
+        dx_player, dy_player = get_next_player_move()
+        player_group.update(dt, dx_player, dy_player)
 
         pygame.display.flip()
 

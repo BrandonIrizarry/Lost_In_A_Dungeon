@@ -259,37 +259,6 @@ crawler = MovingThing(2, 2, **{
 })
 
 
-def get_next_player_move() -> Point:
-    """Move the player in the direction provided by the user.
-
-    If there is a blocked collision, don't allow the move.
-
-    """
-
-    # Reset motion vector to 0 for this frame.
-    dx, dy = 0, 0
-
-    keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_UP]:
-        dy = -1
-    elif keys[pygame.K_DOWN]:
-        dy = 1
-    elif keys[pygame.K_LEFT]:
-        dx = -1
-    elif keys[pygame.K_RIGHT]:
-        dx = 1
-
-    # The tentative player position.
-    tentative = player_group.sprite.rect.move(dx, dy)
-
-    for pillar in pillar_group:
-        if tentative.colliderect(pillar.rect):
-            return 0, 0
-
-    return dx, dy
-
-
 def get_next_crawler_move(crawler: MovingThing) -> Point:
     dx, dy = random.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])
 

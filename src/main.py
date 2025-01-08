@@ -119,12 +119,6 @@ class Spritesheet:
         return [self.get(tile_def) for tile_def in tile_defs]
 
 
-UP = (0, -1)
-DOWN = (0, 1)
-LEFT = (-1, 0)
-RIGHT = (1, 0)
-
-
 class MovingThing(pygame.sprite.Sprite):
     """Parent class (morally) of player and crawler sprites.
 
@@ -136,10 +130,10 @@ class MovingThing(pygame.sprite.Sprite):
         super().__init__()
 
         self.motions_table = {
-            DOWN: [animations["down"][0], animations["down"][1]],
-            UP: [animations["up"][0], animations["up"][1]],
-            LEFT: [animations["left"][0], animations["left"][1]],
-            RIGHT: [animations["right"][0], animations["right"][1]]
+            cs.DOWN: [animations["down"][0], animations["down"][1]],
+            cs.UP: [animations["up"][0], animations["up"][1]],
+            cs.LEFT: [animations["left"][0], animations["left"][1]],
+            cs.RIGHT: [animations["right"][0], animations["right"][1]]
         }
 
         self.animation_speed = 5
@@ -147,7 +141,7 @@ class MovingThing(pygame.sprite.Sprite):
         self.speed = 200
 
         # Define the image and rect of this sprite.
-        self.image = self.motions_table[DOWN][0]
+        self.image = self.motions_table[cs.DOWN][0]
 
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)

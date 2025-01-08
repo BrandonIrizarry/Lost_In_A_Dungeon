@@ -130,9 +130,6 @@ class MovingThing(pygame.sprite.Sprite):
 
     """
 
-    # Configure the player sprite using this variable.
-    ANIMATION_SPEED = 5
-
     def __init__(self, x: int, y: int, **animations):
         super().__init__()
 
@@ -143,6 +140,7 @@ class MovingThing(pygame.sprite.Sprite):
         self.walk = self.walk_down
 
         self.index = 0
+        self.animation_speed = 5
 
         # Define the image and rect of this sprite.
         self.image = self.walk_down[0]
@@ -172,7 +170,7 @@ class MovingThing(pygame.sprite.Sprite):
         self.rect.y += dy
 
         if vector != (0, 0):
-            self.index += self.ANIMATION_SPEED * dt
+            self.index += self.animation_speed * dt
 
             if self.index >= len(self.walk):
                 self.index = 0

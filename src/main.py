@@ -213,7 +213,7 @@ class Player(pygame.sprite.Sprite):
         self.walk_up = [up1, up2]
         self.walk_left = [left1, left2]
         self.walk_right = [right1, right2]
-        self.orientation = Orientation.DOWN
+        self.walk = self.walk_down
 
         self.index = 0
 
@@ -230,57 +230,27 @@ class Player(pygame.sprite.Sprite):
 
         """
 
-        self._update_position(dx, dy)
-
-        still = dx == 0 and dy == 0
-        self._animation_state(dt, still)
-
-    def _update_position(self, dx, dy):
-        """Interface with the current keypress to determine a player
-        action, and update the details of the player's state.
-        """
-
         vector = (dx, dy)
 
         if vector == (0, -1):
-            self.orientation = Orientation.UP
+            self.walk = self.walk_up
         elif vector == (0, 1):
-            self.orientation = Orientation.DOWN
+            self.walk = self.walk_down
         elif vector == (-1, 0):
-            self.orientation = Orientation.LEFT
+            self.walk = self.walk_left
         elif vector == (1, 0):
-            self.orientation = Orientation.RIGHT
+            self.walk = self.walk_right
 
         self.rect.x += dx
         self.rect.y += dy
 
-    def _animation_state(self, dt, still):
-        """Determine which spritesheet image to display, and which
-        toggle to use.
-
-        """
-        walk = None
-
-        match self.orientation:
-            case Orientation.UP:
-                walk = self.walk_up
-            case Orientation.DOWN:
-                walk = self.walk_down
-            case Orientation.LEFT:
-                walk = self.walk_left
-            case Orientation.RIGHT:
-                walk = self.walk_right
-
-        if walk is None:
-            raise Exception("'walk' is never set")
-
-        if not still:
+        if vector != (0, 0):
             self.index += self.ANIMATION_SPEED * dt
 
-            if self.index >= len(walk):
+            if self.index >= len(self.walk):
                 self.index = 0
 
-        self.image = walk[int(self.index)]
+        self.image = self.walk[int(self.index)]
 
 
 class Pillar(pygame.sprite.Sprite):

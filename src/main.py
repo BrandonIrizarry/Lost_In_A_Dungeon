@@ -319,23 +319,29 @@ for x in range(cs.NUM_TILES_X):
             Floor(sheet, x, y, floor_group)
 
 
-def check_player_move(dx: int,
-                      dy: int,
-                      player_group: pygame.sprite.GroupSingle,
-                      pillar_group: pygame.sprite.Group) -> bool:
-    """Return True iff the player can perform the proposed move
-    without a collision.
+def get_next_player_move() -> Point | None:
+    # Reset motion vector to 0 for this frame.
+    dx, dy = 0, 0
 
-    """
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_UP]:
+        dy = -1
+    elif keys[pygame.K_DOWN]:
+        dy = 1
+    elif keys[pygame.K_LEFT]:
+        dx = -1
+    elif keys[pygame.K_RIGHT]:
+        dx = 1
 
     # The tentative player position.
     tentative = player_group.sprite.rect.move(dx, dy)
 
     for pillar in pillar_group:
         if tentative.colliderect(pillar.rect):
-            return False
+            return None
 
-    return True
+    return dx, dy
 
 
 def mainloop():
@@ -348,10 +354,6 @@ def mainloop():
     clock = pygame.time.Clock()
     dt = 0
 
-    # Make sure these variables are defined over the scope of the
-    # entire while loop.
-    dx, dy = 0, 0
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -362,20 +364,6 @@ def mainloop():
                     case pygame.K_ESCAPE:
                         return
 
-            keys = pygame.key.get_pressed()
-
-            # Reset motion vector to 0 for this frame.
-            dx, dy = 0, 0
-
-            if keys[pygame.K_UP]:
-                dy = -1
-            elif keys[pygame.K_DOWN]:
-                dy = 1
-            elif keys[pygame.K_LEFT]:
-                dx = -1
-            elif keys[pygame.K_RIGHT]:
-                dx = 1
-
         # Important: this prevents moving, animated sprites from
         # leaving streaks.
         screen.fill(pygame.Color("black"))
@@ -384,13 +372,11 @@ def mainloop():
         floor_group.draw(screen)
         player_group.draw(screen)
 
-        move_is_permitted = check_player_move(dx,
-                                              dy,
-                                              player_group,
-                                              pillar_group)
+        dplayer = get_next_player_move()
 
-        if move_is_permitted:
-            player_group.update(dt, dx, dy)
+        if dplayer is not None:
+            dx_player, dy_player = dplayer
+            player_group.update(dt, dx_player, dy_player)
 
         pygame.display.flip()
 

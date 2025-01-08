@@ -352,7 +352,15 @@ for x in range(cs.NUM_TILES_X):
 
 
 # Add the crawlers.
-Crawler(sheet, 2, 2, crawler_group)
+crawler = MovingThing(2, 2, **{
+    "down": sheet.get_all([TileDef.CRAWLER_DOWN_1, TileDef.CRAWLER_DOWN_2]),
+    "up": sheet.get_all([TileDef.CRAWLER_UP_1, TileDef.CRAWLER_UP_2]),
+    "left": sheet.get_all([TileDef.CRAWLER_LEFT_1, TileDef.CRAWLER_LEFT_2]),
+    "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1, TileDef.CRAWLER_RIGHT_2])
+})
+
+crawler_group.add(crawler)
+
 
 def get_next_player_move() -> Point:
     """Move the player in the direction provided by the user.

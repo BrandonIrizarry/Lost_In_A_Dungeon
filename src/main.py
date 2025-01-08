@@ -119,14 +119,7 @@ class Spritesheet:
 
 
 class MovingThing(pygame.sprite.Sprite):
-    """An obligatory definition of the human-controlled Player
-    sprite.
-
-    Other than 'image' and 'rect', many of the fields involve
-    controlling the player animation.
-
-    The class field 'ANIMATION_SPEED' is used for configuring how
-    quickly the player's motion animation is toggled.
+    """Encompasses both the player and crawler sprites.
 
     """
 

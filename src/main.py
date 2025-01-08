@@ -319,7 +319,10 @@ for x in range(cs.NUM_TILES_X):
             Floor(sheet, x, y, floor_group)
 
 
-def check_player_move(dx, dy, player_group, pillar_group) -> bool:
+def check_player_move(dx: int,
+                      dy: int,
+                      player_group: pygame.sprite.GroupSingle,
+                      pillar_group: pygame.sprite.Group) -> bool:
     """Return True iff the player can perform the proposed move
     without a collision.
 

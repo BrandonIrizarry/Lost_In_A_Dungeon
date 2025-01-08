@@ -141,20 +141,19 @@ class MovingThing(pygame.sprite.Sprite):
             Orient.RIGHT: [animations["right"][0], animations["right"][1]]
         }
 
-        self.walk = Orient.DOWN
         self.animation_speed = 5
         self.index = 0
         self.speed = 200
 
         # Define the image and rect of this sprite.
-        self.image = self.motions_table[self.walk][0]
+        self.image = self.motions_table[Orient.DOWN][0]
 
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
 
-    def animate(self, dt):
+    def animate(self, dt, walk):
         self.index += self.animation_speed * dt
-        images = self.motions_table[self.walk]
+        images = self.motions_table[walk]
 
         if self.index >= len(images):
             self.index = 0
@@ -178,26 +177,27 @@ class MovingThing(pygame.sprite.Sprite):
         velocity = pygame.math.Vector2(0, 0)
 
         keys = pygame.key.get_pressed()
+        walk = None
 
         if keys[pygame.K_UP]:
             velocity.y -= 1
-            self.walk = Orient.UP
+            walk = Orient.UP
         elif keys[pygame.K_DOWN]:
             velocity.y += 1
-            self.walk = Orient.DOWN
+            walk = Orient.DOWN
         elif keys[pygame.K_LEFT]:
             velocity.x -= 1
-            self.walk = Orient.LEFT
+            walk = Orient.LEFT
         elif keys[pygame.K_RIGHT]:
             velocity.x += 1
-            self.walk = Orient.RIGHT
+            walk = Orient.RIGHT
 
         displacement = self.check_obstacle(velocity * self.speed * dt,
                                            obstacle_group)
 
         if displacement != pygame.math.Vector2(0, 0):
             self.rect.move_ip(displacement)
-            self.animate(dt)
+            self.animate(dt, walk)
 
 
 class Fixture(pygame.sprite.Sprite):

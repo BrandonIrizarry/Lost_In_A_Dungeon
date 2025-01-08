@@ -1,5 +1,6 @@
 import pygame
 from enum import Enum, auto
+import random
 import constants as cs
 import maze
 
@@ -124,6 +125,62 @@ class Spritesheet:
             image.set_colorkey(color_key)
 
         return pygame.transform.scale_by(image, cs.SCALE_FACTOR)
+
+
+class Crawler(pygame.sprite.Sprite):
+    ANIMATION_SPEED = 5
+
+    def __init__(self, spritesheet: Spritesheet, x: int, y: int, *groups):
+        super().__init__(*groups)
+
+        down1 = spritesheet.get(TileDef.CRAWLER_DOWN_1)
+        down2 = spritesheet.get(TileDef.CRAWLER_DOWN_2)
+        up1 = spritesheet.get(TileDef.CRAWLER_UP_1)
+        up2 = spritesheet.get(TileDef.CRAWLER_UP_2)
+        left1 = spritesheet.get(TileDef.CRAWLER_LEFT_1)
+        left2 = spritesheet.get(TileDef.CRAWLER_LEFT_2)
+        right1 = spritesheet.get(TileDef.CRAWLER_RIGHT_1)
+        right2 = spritesheet.get(TileDef.CRAWLER_RIGHT_2)
+
+        self.walk_down = [down1, down2]
+        self.walk_up = [up1, up2]
+        self.walk_left = [left1, left2]
+        self.walk_right = [right1, right2]
+
+        self.index = 0
+        self.image = random.choice([up1, down1, left1, right1])
+
+        xs, ys = cs.compute_pixel_coords(x, y)
+        self.rect = self.image.get_rect(x=xs, y=ys)
+
+    def update(self, dt, dx, dy):
+        # Update position
+        self.rect.x += dx
+        self.rect.y += dy
+
+        # Update walking animation
+        vector = (dx, dy)
+
+        walk = None
+
+        if vector == (0, -1):
+            walk = self.walk_up
+        elif vector == (0, 1):
+            walk = self.walk_down
+        elif vector == (-1, 0):
+            walk = self.walk_left
+        elif vector == (1, 0):
+            walk = self.walk_right
+
+        if walk is None:
+            return
+
+        self.index += self.ANIMATION_SPEED * dt
+
+        if self.index >= len(walk):
+            self.index = 0
+
+        self.image = walk[int(self.index)]
 
 
 class Player(pygame.sprite.Sprite):
@@ -261,6 +318,7 @@ player_group.add(player)
 
 pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 floor_group: pygame.sprite.Group = pygame.sprite.Group()
+crawler_group: pygame.sprite.Group = pygame.sprite.Group()
 
 
 def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
@@ -319,6 +377,9 @@ for x in range(cs.NUM_TILES_X):
             Floor(sheet, x, y, floor_group)
 
 
+# Add the crawlers.
+Crawler(sheet, 2, 2, crawler_group)
+
 def get_next_player_move() -> Point:
     """Move the player in the direction provided by the user.
 
@@ -342,6 +403,18 @@ def get_next_player_move() -> Point:
 
     # The tentative player position.
     tentative = player_group.sprite.rect.move(dx, dy)
+
+    for pillar in pillar_group:
+        if tentative.colliderect(pillar.rect):
+            return 0, 0
+
+    return dx, dy
+
+
+def get_next_crawler_move(crawler: Crawler) -> Point:
+    dx, dy = random.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])
+
+    tentative = crawler.rect.move(dx, dy)
 
     for pillar in pillar_group:
         if tentative.colliderect(pillar.rect):
@@ -377,9 +450,14 @@ def mainloop():
         pillar_group.draw(screen)
         floor_group.draw(screen)
         player_group.draw(screen)
+        crawler_group.draw(screen)
 
         dx_player, dy_player = get_next_player_move()
         player_group.update(dt, dx_player, dy_player)
+
+        for crawler in crawler_group:
+            dx_crawler, dy_crawler = get_next_crawler_move(crawler)
+            crawler.update(dt, dx_crawler, dy_crawler)
 
         pygame.display.flip()
 

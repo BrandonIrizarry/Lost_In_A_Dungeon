@@ -134,6 +134,7 @@ class MovingThing(pygame.sprite.Sprite):
 
         self.index = 0
         self.animation_speed = 5
+        self.speed = 200
 
         # Define the image and rect of this sprite.
         self.image = self.walk_down[0]
@@ -141,28 +142,48 @@ class MovingThing(pygame.sprite.Sprite):
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
 
-    def update(self, dt, dx, dy):
-        vector = (dx, dy)
+    def check_obstacle(self,
+                       move_by: pygame.math.Vector2,
+                       obstacle_group) -> pygame.math.Vector2:
 
-        if vector == (0, -1):
+        # tentative player position.
+        tentative = player_group.sprite.rect.move(move_by)
+
+        for obstacle in obstacle_group:
+            if tentative.colliderect(obstacle.rect):
+                return pygame.math.Vector2(0, 0)
+
+        return move_by
+
+    def update(self, dt, obstacle_group):
+        velocity = pygame.math.Vector2(0, 0)
+
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_UP]:
+            velocity.y -= 1
             self.walk = self.walk_up
-        elif vector == (0, 1):
+        elif keys[pygame.K_DOWN]:
+            velocity.y += 1
             self.walk = self.walk_down
-        elif vector == (-1, 0):
+        elif keys[pygame.K_LEFT]:
+            velocity.x -= 1
             self.walk = self.walk_left
-        elif vector == (1, 0):
+        elif keys[pygame.K_RIGHT]:
+            velocity.x += 1
             self.walk = self.walk_right
 
-        self.rect.x += dx
-        self.rect.y += dy
+        displacement = self.check_obstacle(velocity * self.speed * dt,
+                                           obstacle_group)
 
-        if vector != (0, 0):
+        if displacement != pygame.math.Vector2(0, 0):
+            self.rect.move_ip(displacement)
             self.index += self.animation_speed * dt
 
             if self.index >= len(self.walk):
                 self.index = 0
 
-        self.image = self.walk[int(self.index)]
+            self.image = self.walk[int(self.index)]
 
 
 class Fixture(pygame.sprite.Sprite):
@@ -237,8 +258,6 @@ crawler = MovingThing(2, 2, **{
     "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1, TileDef.CRAWLER_RIGHT_2])
 })
 
-crawler_group.add(crawler)
-
 
 def get_next_player_move() -> Point:
     """Move the player in the direction provided by the user.
@@ -312,13 +331,7 @@ def mainloop():
         player_group.draw(screen)
         crawler_group.draw(screen)
 
-        dx_player, dy_player = get_next_player_move()
-        player_group.update(dt, dx_player, dy_player)
-
-        for crawler in crawler_group:
-            dx_crawler, dy_crawler = get_next_crawler_move(crawler)
-            crawler.update(dt, dx_crawler, dy_crawler)
-
+        player_group.update(dt, pillar_group)
         pygame.display.flip()
 
         dt = clock.tick(60) / 1000

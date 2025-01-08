@@ -127,7 +127,9 @@ class Orient(Enum):
 
 
 class MovingThing(pygame.sprite.Sprite):
-    """Encompasses both the player and crawler sprites.
+    """Parent class (morally) of player and crawler sprites.
+
+    Right now player is a direct instance of this class.
 
     """
 

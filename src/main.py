@@ -137,7 +137,7 @@ class MovingThing(pygame.sprite.Sprite):
         """
 
         # tentative player position.
-        tentative = player_group.sprite.rect.move(move_by)
+        tentative = self.rect.move(move_by)
 
         for obstacle in obstacle_group:
             if tentative.colliderect(obstacle.rect):

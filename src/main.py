@@ -147,6 +147,11 @@ class MovingThing(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=xs, y=ys)
 
     def animate(self, dt, dx, dy):
+        """Update the image used to display the sprite, based on the
+        direction the sprite is facing.
+
+        """
+
         self.index += self.animation_speed * dt
         walk = (dx, dy)
 
@@ -160,6 +165,9 @@ class MovingThing(pygame.sprite.Sprite):
     def check_obstacle(self,
                        move_by: pygame.math.Vector2,
                        obstacle_group) -> pygame.math.Vector2:
+        """Return displacement, or zero-vector if an obstacle is encountered.
+
+        """
 
         # tentative player position.
         tentative = player_group.sprite.rect.move(move_by)
@@ -171,6 +179,7 @@ class MovingThing(pygame.sprite.Sprite):
         return move_by
 
     def update(self, dt, obstacle_group):
+        """Update the sprite's position."""
         dx, dy = 0, 0
 
         keys = pygame.key.get_pressed()

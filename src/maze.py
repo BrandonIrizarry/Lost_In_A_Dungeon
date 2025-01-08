@@ -172,6 +172,40 @@ class Grid:
         return "\n".join(buffer)
 
 
+def compute_cell_projection(grid: Grid, x: int, y: int) -> list[Point]:
+    """Determine where pillars will be drawn on the board based on a
+    given cell.
+
+    'x' and 'y' are coordinates inside the given grid."""
+
+    # Pairs of coordinates where pillars will be drawn.
+    targets = []
+
+    # Compute the _inverse_ of a cell, that is, compute which sides
+    # should be closed off by pillars.
+    cell = ~grid.grid[x][y]
+
+    xi, yi = 3 * x, 3 * y
+
+    # Add the four corners of the projection to 'targets', since these
+    # otherwise appear as gaps in the displayed maze.
+    targets.extend([(xi, yi), (xi + 3, yi), (xi, yi + 3), (xi + 3, yi + 3)])
+
+    if Cell.UP in cell:
+        targets.extend([(xi + 1, yi), (xi + 2, yi)])
+
+    if Cell.DOWN in cell:
+        targets.extend([(xi + 1, yi + 3), (xi + 2, yi + 3)])
+
+    if Cell.LEFT in cell:
+        targets.extend([(xi, yi + 1), (xi, yi + 2)])
+
+    if Cell.RIGHT in cell:
+        targets.extend([(xi + 3, yi + 1), (xi + 3, yi + 2)])
+
+    return targets
+
+
 # Scratch work for sanity-testing.
 if __name__ == "__main__":
     grid = Grid(5, 5)

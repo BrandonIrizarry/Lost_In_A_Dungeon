@@ -220,48 +220,13 @@ pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 floor_group: pygame.sprite.Group = pygame.sprite.Group()
 crawler_group: pygame.sprite.Group = pygame.sprite.Group()
 
-
-def compute_cell_projection(grid: maze.Grid, x: int, y: int) -> list[Point]:
-    """Determine where pillars will be drawn on the board based on a
-    given cell.
-
-    'x' and 'y' are coordinates inside the given grid."""
-
-    # Pairs of coordinates where pillars will be drawn.
-    targets = []
-
-    # Compute the _inverse_ of a cell, that is, compute which sides
-    # should be closed off by pillars.
-    cell = ~grid.grid[x][y]
-
-    xi, yi = 3 * x, 3 * y
-
-    # Add the four corners of the projection to 'targets', since these
-    # otherwise appear as gaps in the displayed maze.
-    targets.extend([(xi, yi), (xi + 3, yi), (xi, yi + 3), (xi + 3, yi + 3)])
-
-    if maze.Cell.UP in cell:
-        targets.extend([(xi + 1, yi), (xi + 2, yi)])
-
-    if maze.Cell.DOWN in cell:
-        targets.extend([(xi + 1, yi + 3), (xi + 2, yi + 3)])
-
-    if maze.Cell.LEFT in cell:
-        targets.extend([(xi, yi + 1), (xi, yi + 2)])
-
-    if maze.Cell.RIGHT in cell:
-        targets.extend([(xi + 3, yi + 1), (xi + 3, yi + 2)])
-
-    return targets
-
-
 # Use a set, so that we can remove duplicates (we don't add a pillar
 # twice to a given board position.)
 all_projections = set()
 
 for x in range(cs.GRID_X):
     for y in range(cs.GRID_Y):
-        projection = compute_cell_projection(grid, x, y)
+        projection = maze.compute_cell_projection(grid, x, y)
 
         for p in projection:
             all_projections.add(p)

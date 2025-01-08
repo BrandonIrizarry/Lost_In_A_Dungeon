@@ -319,7 +319,7 @@ for x in range(cs.NUM_TILES_X):
             Floor(sheet, x, y, floor_group)
 
 
-def check_move(dx, dy, player_group, pillar_group) -> bool:
+def check_player_move(dx, dy, player_group, pillar_group) -> bool:
     """Return True iff the player can perform the proposed move
     without a collision.
 
@@ -381,7 +381,10 @@ def mainloop():
         floor_group.draw(screen)
         player_group.draw(screen)
 
-        move_is_permitted = check_move(dx, dy, player_group, pillar_group)
+        move_is_permitted = check_player_move(dx,
+                                              dy,
+                                              player_group,
+                                              pillar_group)
 
         if move_is_permitted:
             player_group.update(dt, dx, dy)

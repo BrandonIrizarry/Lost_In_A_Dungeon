@@ -23,55 +23,22 @@ class TileDef(Enum):
     STAIRS_UP = (Vector2(4, 2), None)
     TREASURE = (Vector2(5, 3), None)
     PILLAR = (Vector2(3, 2), None)
-
-    PLAYER_DOWN_1 = (Vector2(0, 8),
-                     pygame.Color("#00288c"))
-
-    PLAYER_DOWN_2 = (Vector2(1, 8),
-                     pygame.Color("#00288c"))
-
-    PLAYER_UP_1 = (Vector2(2, 8),
-                   pygame.Color("#00288c"))
-
-    PLAYER_UP_2 = (Vector2(3, 8),
-                   pygame.Color("#00288c"))
-
-    PLAYER_LEFT_1 = (Vector2(4, 8),
-                     pygame.Color("#00288c"))
-
-    PLAYER_LEFT_2 = (Vector2(5, 8),
-                     pygame.Color("#00288c"))
-
-    PLAYER_RIGHT_1 = (Vector2(6, 8),
-                      pygame.Color("#00288c"))
-
-    PLAYER_RIGHT_2 = (Vector2(7, 8),
-                      pygame.Color("#00288c"))
-
-    CRAWLER_DOWN_1 = (Vector2(0, 7),
-                      pygame.Color("#747474"))
-
-    CRAWLER_DOWN_2 = (Vector2(1, 7),
-                      pygame.Color("#747474"))
-
-    CRAWLER_UP_1 = (Vector2(2, 7),
-                    pygame.Color("#747474"))
-
-    CRAWLER_UP_2 = (Vector2(3, 7),
-                    pygame.Color("#747474"))
-
-    CRAWLER_LEFT_1 = (Vector2(4, 7),
-                      pygame.Color("#747474"))
-
-    CRAWLER_LEFT_2 = (Vector2(5, 7),
-                      pygame.Color("#747474"))
-
-    CRAWLER_RIGHT_1 = (Vector2(6, 7),
-                       pygame.Color("#747474"))
-
-    CRAWLER_RIGHT_2 = (Vector2(7, 7),
-                       pygame.Color("#747474"))
-
+    PLAYER_DOWN_1 = (Vector2(0, 8), pygame.Color("#00288c"))
+    PLAYER_DOWN_2 = (Vector2(1, 8), pygame.Color("#00288c"))
+    PLAYER_UP_1 = (Vector2(2, 8), pygame.Color("#00288c"))
+    PLAYER_UP_2 = (Vector2(3, 8), pygame.Color("#00288c"))
+    PLAYER_LEFT_1 = (Vector2(4, 8), pygame.Color("#00288c"))
+    PLAYER_LEFT_2 = (Vector2(5, 8), pygame.Color("#00288c"))
+    PLAYER_RIGHT_1 = (Vector2(6, 8), pygame.Color("#00288c"))
+    PLAYER_RIGHT_2 = (Vector2(7, 8), pygame.Color("#00288c"))
+    CRAWLER_DOWN_1 = (Vector2(0, 7), pygame.Color("#747474"))
+    CRAWLER_DOWN_2 = (Vector2(1, 7), pygame.Color("#747474"))
+    CRAWLER_UP_1 = (Vector2(2, 7), pygame.Color("#747474"))
+    CRAWLER_UP_2 = (Vector2(3, 7), pygame.Color("#747474"))
+    CRAWLER_LEFT_1 = (Vector2(4, 7), pygame.Color("#747474"))
+    CRAWLER_LEFT_2 = (Vector2(5, 7), pygame.Color("#747474"))
+    CRAWLER_RIGHT_1 = (Vector2(6, 7), pygame.Color("#747474"))
+    CRAWLER_RIGHT_2 = (Vector2(7, 7), pygame.Color("#747474"))
     FLOOR = (Vector2(6, 1), None)
 
 

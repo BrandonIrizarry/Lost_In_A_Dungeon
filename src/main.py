@@ -142,12 +142,6 @@ class MovingThing(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=xs, y=ys)
 
     def update(self, dt, dx, dy):
-        """The obligatory 'update' override.
-
-        This in turn calls various private helper methods.
-
-        """
-
         vector = (dx, dy)
 
         if vector == (0, -1):

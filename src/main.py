@@ -3,6 +3,7 @@ from enum import Enum
 import random
 import constants as cs
 import maze
+from pygame.math import Vector2
 
 
 type Point = tuple[int, int]
@@ -118,6 +119,13 @@ class Spritesheet:
         return [self.get(tile_def) for tile_def in tile_defs]
 
 
+class Orient(Enum):
+    UP = Vector2(0, -1)
+    DOWN = Vector2(0, 1)
+    LEFT = Vector2(-1, 0)
+    RIGHT = Vector2(1, 0)
+
+
 class MovingThing(pygame.sprite.Sprite):
     """Encompasses both the player and crawler sprites.
 
@@ -126,21 +134,32 @@ class MovingThing(pygame.sprite.Sprite):
     def __init__(self, x: int, y: int, **animations):
         super().__init__()
 
-        self.walk_down = [animations["down"][0], animations["down"][1]]
-        self.walk_up = [animations["up"][0], animations["up"][1]]
-        self.walk_left = [animations["left"][0], animations["left"][1]]
-        self.walk_right = [animations["right"][0], animations["right"][1]]
-        self.walk = self.walk_down
+        self.motions_table = {
+            Orient.DOWN: [animations["down"][0], animations["down"][1]],
+            Orient.UP: [animations["up"][0], animations["up"][1]],
+            Orient.LEFT: [animations["left"][0], animations["left"][1]],
+            Orient.RIGHT: [animations["right"][0], animations["right"][1]]
+        }
 
-        self.index = 0
+        self.walk = Orient.DOWN
         self.animation_speed = 5
+        self.index = 0
         self.speed = 200
 
         # Define the image and rect of this sprite.
-        self.image = self.walk_down[0]
+        self.image = self.motions_table[self.walk][0]
 
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
+
+    def animate(self, dt):
+        self.index += self.animation_speed * dt
+        images = self.motions_table[self.walk]
+
+        if self.index >= len(images):
+            self.index = 0
+
+        self.image = images[int(self.index)]
 
     def check_obstacle(self,
                        move_by: pygame.math.Vector2,
@@ -162,28 +181,23 @@ class MovingThing(pygame.sprite.Sprite):
 
         if keys[pygame.K_UP]:
             velocity.y -= 1
-            self.walk = self.walk_up
+            self.walk = Orient.UP
         elif keys[pygame.K_DOWN]:
             velocity.y += 1
-            self.walk = self.walk_down
+            self.walk = Orient.DOWN
         elif keys[pygame.K_LEFT]:
             velocity.x -= 1
-            self.walk = self.walk_left
+            self.walk = Orient.LEFT
         elif keys[pygame.K_RIGHT]:
             velocity.x += 1
-            self.walk = self.walk_right
+            self.walk = Orient.RIGHT
 
         displacement = self.check_obstacle(velocity * self.speed * dt,
                                            obstacle_group)
 
         if displacement != pygame.math.Vector2(0, 0):
             self.rect.move_ip(displacement)
-            self.index += self.animation_speed * dt
-
-            if self.index >= len(self.walk):
-                self.index = 0
-
-            self.image = self.walk[int(self.index)]
+            self.animate(dt)
 
 
 class Fixture(pygame.sprite.Sprite):

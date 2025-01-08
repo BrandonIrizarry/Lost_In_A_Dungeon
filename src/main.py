@@ -46,6 +46,30 @@ class TileDef(Enum):
     PLAYER_RIGHT_2 = (pygame.math.Vector2(7, 8),
                       pygame.Color("#00288c"))
 
+    CRAWLER_DOWN_1 = (pygame.math.Vector2(0, 7),
+                      pygame.Color("#747474"))
+
+    CRAWLER_DOWN_2 = (pygame.math.Vector2(1, 7),
+                      pygame.Color("#747474"))
+
+    CRAWLER_UP_1 = (pygame.math.Vector2(2, 7),
+                    pygame.Color("#747474"))
+
+    CRAWLER_UP_2 = (pygame.math.Vector2(3, 7),
+                    pygame.Color("#747474"))
+
+    CRAWLER_LEFT_1 = (pygame.math.Vector2(4, 7),
+                      pygame.Color("#747474"))
+
+    CRAWLER_LEFT_2 = (pygame.math.Vector2(5, 7),
+                      pygame.Color("#747474"))
+
+    CRAWLER_RIGHT_1 = (pygame.math.Vector2(6, 7),
+                       pygame.Color("#747474"))
+
+    CRAWLER_RIGHT_2 = (pygame.math.Vector2(7, 7),
+                       pygame.Color("#747474"))
+
     FLOOR = (pygame.math.Vector2(6, 1), None)
 
 

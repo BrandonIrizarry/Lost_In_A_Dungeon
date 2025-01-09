@@ -151,13 +151,13 @@ class MovingThing(pygame.sprite.Sprite):
 
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_w]:
             dy = -1
-        elif keys[pygame.K_DOWN]:
+        elif keys[pygame.K_s]:
             dy = 1
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_a]:
             dx = -1
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_d]:
             dx = 1
 
         unit_velocity = Vector2(dx, dy)

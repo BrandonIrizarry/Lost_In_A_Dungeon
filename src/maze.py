@@ -162,7 +162,7 @@ class Grid:
         return "\n".join(buffer)
 
 
-def compute_cell_projection(grid: Grid, x: int, y: int) -> list[Point]:
+def compute_pillar_position(grid: Grid, x: int, y: int) -> list[Point]:
     """Determine where pillars will be drawn on the board based on a
     given cell.
 

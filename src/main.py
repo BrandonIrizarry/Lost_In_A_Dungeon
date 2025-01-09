@@ -266,7 +266,7 @@ class LevelDefinition:
 
         for x in range(cs.GRID_X):
             for y in range(cs.GRID_Y):
-                projection = maze.compute_cell_projection(grid, x, y)
+                projection = maze.compute_pillar_position(grid, x, y)
 
                 for p in projection:
                     self.all_projections.add(p)

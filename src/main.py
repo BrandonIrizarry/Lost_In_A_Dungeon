@@ -256,7 +256,7 @@ class LevelDefinition:
     def __init__(self, sheet: Spritesheet):
         # Use a set, so that we can remove duplicates (we don't add a pillar
         # twice to a given board position.)
-        self.all_projections: set[Point] = set()
+        self.pillar_positions: set[Point] = set()
         self.sheet = sheet
 
     def define_pillar_tiles(self) -> pygame.sprite.Group:
@@ -266,12 +266,12 @@ class LevelDefinition:
 
         for x in range(cs.GRID_X):
             for y in range(cs.GRID_Y):
-                projection = maze.compute_pillar_position(grid, x, y)
+                pos = maze.compute_pillar_position(grid, x, y)
 
-                for p in projection:
-                    self.all_projections.add(p)
+                for p in pos:
+                    self.pillar_positions.add(p)
 
-            for x, y in self.all_projections:
+            for x, y in self.pillar_positions:
                 pillar = Fixture(x, y, self.sheet.get(TileDef.PILLAR))
                 pillar_group.add(pillar)
 
@@ -284,7 +284,7 @@ class LevelDefinition:
 
         for x in range(cs.NUM_TILES_X):
             for y in range(cs.NUM_TILES_Y):
-                if (x, y) not in self.all_projections:
+                if (x, y) not in self.pillar_positions:
                     floor = Fixture(x, y, self.sheet.get(TileDef.FLOOR))
                     floor_group.add(floor)
 

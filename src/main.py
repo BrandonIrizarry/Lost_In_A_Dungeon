@@ -156,13 +156,12 @@ class Fixture(pygame.sprite.Sprite):
 
 
 pygame.init()
-
-grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
-grid.carve()
-
 screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
 screen = pygame.display.set_mode(screen_dimensions)
 sheet = Spritesheet("../graphics/spritesheet.png")
+
+grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
+grid.carve()
 
 
 def make_crawler(x: int, y: int) -> Crawler:

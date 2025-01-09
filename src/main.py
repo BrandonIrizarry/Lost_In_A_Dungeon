@@ -132,7 +132,7 @@ class MovingThing(pygame.sprite.Sprite):
 
     def check_obstacle(self,
                        move_by: Vector2,
-                       obstacle_group) -> Vector2 | None:
+                       obstacle_group) -> Vector2:
         """Return displacement, or zero-vector if an obstacle is encountered.
 
         """

@@ -72,7 +72,26 @@ class MovingThing(pygame.sprite.Sprite):
 
         return move_by
 
-    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
+    def check_damage(self,
+                     move_by: Vector2,
+                     damage_groups: list[pygame.sprite.Group]) -> bool:
+        """Check for a damage collision initiated by this sprite.
+
+        Return whether a damaging hit occurred."""
+
+        tentative = self.rect.move(move_by)
+
+        for group in damage_groups:
+            for sprite in group:
+                collided = tentative.colliderect(sprite.rect)
+
+                if collided:
+                    return True
+
+        return False
+
+    def update(self, dt, **collision_type: list[pygame.sprite.Group])\
+            -> bool:
         """Update the sprite's position."""
         dx, dy = 0, 0
 
@@ -90,6 +109,12 @@ class MovingThing(pygame.sprite.Sprite):
         unit_velocity = Vector2(dx, dy)
         displacement = self.check_block(unit_velocity * self.speed * dt,
                                         collision_type["block"])
+
+        damage = self.check_damage(unit_velocity * self.speed * dt,
+                                   collision_type["damage"])
+
+        if damage:
+            return True
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
@@ -290,9 +315,13 @@ def mainloop():
         player_group.draw(screen)
         crawler_group.draw(screen)
 
-        player_group.update(dt, **{
-            "block": [crawler_group, pillar_group]
+        dead = player_group.sprite.update(dt, **{
+            "block": [crawler_group, pillar_group],
+            "damage": [crawler_group],
         })
+
+        if dead:
+            return
 
         crawler_group.update(dt, **{
             "block": [crawler_group, pillar_group, player_group]

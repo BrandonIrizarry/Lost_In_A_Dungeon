@@ -61,16 +61,6 @@ class Grid:
             for j in range(height):
                 self.grid[-1].append(Cell(0))
 
-    def get_random_point(self) -> Point:
-        """Return a random pair of coordinates from within the grid.
-
-        """
-
-        x_start = random.randrange(self.width)
-        y_start = random.randrange(self.height)
-
-        return x_start, y_start
-
     def tour(self, x_start, y_start) -> None:
         """Attempt to perform a random walk around 'grid', until all paths
         forward lead either to a visited cell, or would take us
@@ -137,7 +127,9 @@ class Grid:
 
         This is the public, top-level method of this class."""
 
-        x, y = self.get_random_point()
+        # Pick a random point from within the grid.
+        x = random.randrange(self.width)
+        y = random.randrange(self.height)
 
         while True:
             self.tour(x, y)

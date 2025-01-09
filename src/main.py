@@ -33,7 +33,7 @@ class MovingThing(pygame.sprite.Sprite):
         self.image = self.motions_table[cs.DOWN][0]
 
         xs, ys = cs.compute_pixel_coords(x, y)
-        self.rect = self.image.get_rect(x=xs, y=ys)
+        self.rect = self.image.get_rect(x=xs, y=ys).inflate(-5.0, -5.0)
 
     def animate(self, dt, dx, dy):
         """Update the image used to display the sprite, based on the

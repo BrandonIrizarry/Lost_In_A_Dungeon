@@ -166,7 +166,10 @@ def compute_cell_projection(grid: Grid, x: int, y: int) -> list[Point]:
     """Determine where pillars will be drawn on the board based on a
     given cell.
 
-    'x' and 'y' are coordinates inside the given grid."""
+    'x' and 'y' are coordinates inside the initial maze grid (as opposed
+    to the final level definition.)
+
+    """
 
     # Pairs of coordinates where pillars will be drawn.
     targets = []

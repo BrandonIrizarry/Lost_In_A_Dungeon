@@ -40,6 +40,7 @@ class TileDef(Enum):
     CRAWLER_RIGHT_1 = (Vector2(6, 7), pygame.Color("#747474"))
     CRAWLER_RIGHT_2 = (Vector2(7, 7), pygame.Color("#747474"))
     FLOOR = (Vector2(6, 1), None)
+    SWORD = (Vector2(0, 6), None)
 
 
 class Spritesheet:

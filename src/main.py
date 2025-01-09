@@ -53,7 +53,7 @@ class MovingThing(pygame.sprite.Sprite):
 
     def check_obstacle(self,
                        move_by: Vector2,
-                       obstacle_group) -> Vector2:
+                       obstacle_groups: list[pygame.sprite.Group]) -> Vector2:
         """Return displacement, or zero-vector if an obstacle is encountered.
 
         """
@@ -61,17 +61,18 @@ class MovingThing(pygame.sprite.Sprite):
         # tentative player position.
         tentative = self.rect.move(move_by)
 
-        for obstacle in obstacle_group:
-            collided = tentative.colliderect(obstacle.rect)
+        for group in obstacle_groups:
+            for obstacle in group:
+                collided = tentative.colliderect(obstacle.rect)
 
-            # Make sure that a given sprite can't "collide" with
-            # itself.
-            if obstacle.rect != self.rect and collided:
-                return Vector2(0, 0)
+                # Make sure that a given sprite can't "collide" with
+                # itself.
+                if obstacle.rect != self.rect and collided:
+                    return Vector2(0, 0)
 
         return move_by
 
-    def update(self, dt, **collision_type: pygame.sprite.Group):
+    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
         """Update the sprite's position."""
         dx, dy = 0, 0
 
@@ -113,7 +114,7 @@ class Crawler(MovingThing):
         self.speed = 100
         self.unit_velocity = cs.DOWN
 
-    def update(self, dt, **collision_type: pygame.sprite.Group):
+    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
         self.timer -= dt
 
         if self.timer <= 0:
@@ -270,10 +271,6 @@ def mainloop():
     crawler_group = level.define_crawlers()
     player_group = level.define_player()
 
-    obstacle_group = pygame.sprite.Group(*crawler_group.sprites(),
-                                         *pillar_group.sprites(),
-                                         player_group.sprite)
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -294,11 +291,11 @@ def mainloop():
         crawler_group.draw(screen)
 
         player_group.update(dt, **{
-            "block": obstacle_group
+            "block": [crawler_group, pillar_group]
         })
 
         crawler_group.update(dt, **{
-            "block": obstacle_group
+            "block": [crawler_group, pillar_group, player_group]
         })
 
         pygame.display.flip()

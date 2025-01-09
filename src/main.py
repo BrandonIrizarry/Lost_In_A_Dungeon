@@ -351,7 +351,8 @@ def mainloop():
     player_group = level.define_player()
 
     obstacle_group = pygame.sprite.Group(*crawler_group.sprites(),
-                                         *pillar_group.sprites())
+                                         *pillar_group.sprites(),
+                                         player_group.sprite)
 
     while True:
         for event in pygame.event.get():

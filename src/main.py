@@ -51,7 +51,7 @@ class MovingThing(pygame.sprite.Sprite):
 
         self.image = images[int(self.index)]
 
-    def check_obstacle(self,
+    def check_block(self,
                        move_by: Vector2,
                        obstacle_groups: list[pygame.sprite.Group]) -> Vector2:
         """Return displacement, or zero-vector if an obstacle is encountered.
@@ -88,7 +88,7 @@ class MovingThing(pygame.sprite.Sprite):
             dx = 1
 
         unit_velocity = Vector2(dx, dy)
-        displacement = self.check_obstacle(unit_velocity * self.speed * dt,
+        displacement = self.check_block(unit_velocity * self.speed * dt,
                                            collision_type["block"])
 
         # The displacement could be the zero vector, either because
@@ -125,7 +125,7 @@ class Crawler(MovingThing):
             self.timer = self.cooldown
 
         velocity = Vector2(self.unit_velocity)
-        displacement = self.check_obstacle(velocity * self.speed * dt,
+        displacement = self.check_block(velocity * self.speed * dt,
                                            collision_type["block"])
 
         # In the case of the crawler, zero-displacement only occurs

@@ -61,12 +61,6 @@ class Grid:
             for j in range(height):
                 self.grid[-1].append(Cell(0))
 
-    def not_yet_visited(self, point: Point):
-        """Return True iff the given grid point has not yet been visited."""
-        x, y = point
-
-        return self.grid[x][y] == Cell(0)
-
     def get_random_point(self) -> Point:
         """Return a random pair of coordinates from within the grid.
 
@@ -94,7 +88,11 @@ class Grid:
                                                    self.width,
                                                    self.height)
 
-            neighbors = list(filter(self.not_yet_visited, neighbors))
+            def not_yet_visited(p: Point) -> bool:
+                x, y = p
+                return self.grid[x][y].unvisited()
+
+            neighbors = list(filter(not_yet_visited, neighbors))
 
             if neighbors == []:
                 return

@@ -71,7 +71,7 @@ class MovingThing(pygame.sprite.Sprite):
 
         return move_by
 
-    def update(self, dt, obstacle_group):
+    def update(self, dt, **collision_type: pygame.sprite.Group):
         """Update the sprite's position."""
         dx, dy = 0, 0
 
@@ -88,7 +88,7 @@ class MovingThing(pygame.sprite.Sprite):
 
         unit_velocity = Vector2(dx, dy)
         displacement = self.check_obstacle(unit_velocity * self.speed * dt,
-                                           obstacle_group)
+                                           collision_type["block"])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
@@ -293,7 +293,10 @@ def mainloop():
         player_group.draw(screen)
         crawler_group.draw(screen)
 
-        player_group.update(dt, obstacle_group)
+        player_group.update(dt, **{
+            "block": obstacle_group
+        })
+
         crawler_group.update(dt, obstacle_group)
 
         pygame.display.flip()

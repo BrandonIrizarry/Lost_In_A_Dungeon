@@ -291,11 +291,6 @@ class LevelDefinition:
         return floor_group
 
 
-level = LevelDefinition(sheet)
-pillar_group = level.define_pillar_tiles()
-floor_group = level.define_floor_tiles()
-
-
 def make_crawler(x: int, y: int) -> Crawler:
     """Shorthand for adding a crawler to the level."""
 
@@ -322,6 +317,10 @@ def mainloop():
     """
     clock = pygame.time.Clock()
     dt = 0
+
+    level = LevelDefinition(sheet)
+    pillar_group = level.define_pillar_tiles()
+    floor_group = level.define_floor_tiles()
 
     while True:
         for event in pygame.event.get():

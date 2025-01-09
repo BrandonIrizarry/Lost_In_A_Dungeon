@@ -277,14 +277,20 @@ for x in range(cs.NUM_TILES_X):
             floor_group.add(floor)
 
 
-# Add the crawlers.
-crawler = Crawler(2, 2, **{
-    "down": sheet.get_all([TileDef.CRAWLER_DOWN_1, TileDef.CRAWLER_DOWN_2]),
-    "up": sheet.get_all([TileDef.CRAWLER_UP_1, TileDef.CRAWLER_UP_2]),
-    "left": sheet.get_all([TileDef.CRAWLER_LEFT_1, TileDef.CRAWLER_LEFT_2]),
-    "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1, TileDef.CRAWLER_RIGHT_2])
-})
+def make_crawler(x: int, y: int) -> Crawler:
+    """Shorthand for adding a crawler to the level."""
 
+    crawler = Crawler(x, y, **{
+        "down": sheet.get_all([TileDef.CRAWLER_DOWN_1, TileDef.CRAWLER_DOWN_2]),
+        "up": sheet.get_all([TileDef.CRAWLER_UP_1, TileDef.CRAWLER_UP_2]),
+        "left": sheet.get_all([TileDef.CRAWLER_LEFT_1, TileDef.CRAWLER_LEFT_2]),
+        "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1, TileDef.CRAWLER_RIGHT_2])
+    })
+
+    return crawler
+
+
+crawler = make_crawler(2, 2)
 crawler_group.add(crawler)
 
 

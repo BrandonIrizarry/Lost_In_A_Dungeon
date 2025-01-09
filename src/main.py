@@ -288,18 +288,6 @@ crawler = Crawler(2, 2, **{
 crawler_group.add(crawler)
 
 
-def get_next_crawler_move(crawler: MovingThing) -> Point:
-    dx, dy = random.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])
-
-    tentative = crawler.rect.move(dx, dy)
-
-    for pillar in pillar_group:
-        if tentative.colliderect(pillar.rect):
-            return 0, 0
-
-    return dx, dy
-
-
 def mainloop():
     """The main pygame loop.
 

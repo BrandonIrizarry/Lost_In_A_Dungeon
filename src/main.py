@@ -238,17 +238,6 @@ screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
 screen = pygame.display.set_mode(screen_dimensions)
 sheet = Spritesheet("../graphics/spritesheet.png")
 
-player = MovingThing(1, 1, **{
-    "down": sheet.get_all([TileDef.PLAYER_DOWN_1, TileDef.PLAYER_DOWN_2]),
-    "up": sheet.get_all([TileDef.PLAYER_UP_1, TileDef.PLAYER_UP_2]),
-    "left": sheet.get_all([TileDef.PLAYER_LEFT_1, TileDef.PLAYER_LEFT_2]),
-    "right": sheet.get_all([TileDef.PLAYER_RIGHT_1, TileDef.PLAYER_RIGHT_2])
-})
-
-
-player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
-player_group.add(player)
-
 
 def make_crawler(x: int, y: int) -> Crawler:
     """Shorthand for adding a crawler to the level."""
@@ -319,6 +308,26 @@ class LevelDefinition:
 
         return crawler_group
 
+    def define_player(self) -> pygame.sprite.GroupSingle:
+        """Define the initial player position."""
+
+        player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
+
+        player = MovingThing(1, 1, **{
+            "down": sheet.get_all([TileDef.PLAYER_DOWN_1,
+                                   TileDef.PLAYER_DOWN_2]),
+            "up": sheet.get_all([TileDef.PLAYER_UP_1,
+                                 TileDef.PLAYER_UP_2]),
+            "left": sheet.get_all([TileDef.PLAYER_LEFT_1,
+                                   TileDef.PLAYER_LEFT_2]),
+            "right": sheet.get_all([TileDef.PLAYER_RIGHT_1,
+                                    TileDef.PLAYER_RIGHT_2])
+        })
+
+        player_group.add(player)
+
+        return player_group
+
 
 def mainloop():
     """The main pygame loop.
@@ -334,6 +343,7 @@ def mainloop():
     pillar_group = level.define_pillar_tiles()
     floor_group = level.define_floor_tiles()
     crawler_group = level.define_crawlers()
+    player_group = level.define_player()
 
     while True:
         for event in pygame.event.get():

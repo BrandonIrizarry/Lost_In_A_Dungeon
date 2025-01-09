@@ -141,7 +141,11 @@ class MovingThing(pygame.sprite.Sprite):
         tentative = self.rect.move(move_by)
 
         for obstacle in obstacle_group:
-            if tentative.colliderect(obstacle.rect):
+            collided = tentative.colliderect(obstacle.rect)
+
+            # Make sure that a given sprite can't "collide" with
+            # itself.
+            if obstacle.rect != self.rect and collided:
                 return Vector2(0, 0)
 
         return move_by
@@ -369,7 +373,7 @@ def mainloop():
         crawler_group.draw(screen)
 
         player_group.update(dt, obstacle_group)
-        crawler_group.update(dt, pillar_group)
+        crawler_group.update(dt, obstacle_group)
 
         pygame.display.flip()
 

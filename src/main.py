@@ -249,7 +249,18 @@ player = MovingThing(1, 1, **{
 player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 player_group.add(player)
 
-crawler_group: pygame.sprite.Group = pygame.sprite.Group()
+
+def make_crawler(x: int, y: int) -> Crawler:
+    """Shorthand for adding a crawler to the level."""
+
+    crawler = Crawler(x, y, **{
+        "down": sheet.get_all([TileDef.CRAWLER_DOWN_1, TileDef.CRAWLER_DOWN_2]),
+        "up": sheet.get_all([TileDef.CRAWLER_UP_1, TileDef.CRAWLER_UP_2]),
+        "left": sheet.get_all([TileDef.CRAWLER_LEFT_1, TileDef.CRAWLER_LEFT_2]),
+        "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1, TileDef.CRAWLER_RIGHT_2])
+    })
+
+    return crawler
 
 
 class LevelDefinition:
@@ -260,7 +271,7 @@ class LevelDefinition:
         self.sheet = sheet
 
     def define_pillar_tiles(self) -> pygame.sprite.Group:
-        """Define pillar positions in the final level drawing."""
+        """Define pillar positions in the level."""
 
         pillar_group: pygame.sprite.Group = pygame.sprite.Group()
 
@@ -278,7 +289,7 @@ class LevelDefinition:
         return pillar_group
 
     def define_floor_tiles(self) -> pygame.sprite.Group:
-        """Define floor tile positions in the final level drawing."""
+        """Define floor tile positions in the level."""
 
         floor_group: pygame.sprite.Group = pygame.sprite.Group()
 
@@ -290,22 +301,19 @@ class LevelDefinition:
 
         return floor_group
 
+    def define_crawlers(self) -> pygame.sprite.Group:
+        """Define initial crawler positions in the level."""
 
-def make_crawler(x: int, y: int) -> Crawler:
-    """Shorthand for adding a crawler to the level."""
+        crawler_group: pygame.sprite.Group = pygame.sprite.Group()
 
-    crawler = Crawler(x, y, **{
-        "down": sheet.get_all([TileDef.CRAWLER_DOWN_1, TileDef.CRAWLER_DOWN_2]),
-        "up": sheet.get_all([TileDef.CRAWLER_UP_1, TileDef.CRAWLER_UP_2]),
-        "left": sheet.get_all([TileDef.CRAWLER_LEFT_1, TileDef.CRAWLER_LEFT_2]),
-        "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1, TileDef.CRAWLER_RIGHT_2])
-    })
+        for x in range(cs.NUM_TILES_X):
+            for y in range(cs.NUM_TILES_Y):
+                if (x, y) not in self.pillar_positions:
+                    if random.random() <= 1/20:
+                        crawler = make_crawler(x, y)
+                        crawler_group.add(crawler)
 
-    return crawler
-
-
-crawler = make_crawler(2, 2)
-crawler_group.add(crawler)
+        return crawler_group
 
 
 def mainloop():
@@ -321,6 +329,7 @@ def mainloop():
     level = LevelDefinition(sheet)
     pillar_group = level.define_pillar_tiles()
     floor_group = level.define_floor_tiles()
+    crawler_group = level.define_crawlers()
 
     while True:
         for event in pygame.event.get():

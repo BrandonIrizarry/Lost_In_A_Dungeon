@@ -346,6 +346,9 @@ def mainloop():
     crawler_group = level.define_crawlers()
     player_group = level.define_player()
 
+    obstacle_group = pygame.sprite.Group(*crawler_group.sprites(),
+                                         *pillar_group.sprites())
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -365,7 +368,7 @@ def mainloop():
         player_group.draw(screen)
         crawler_group.draw(screen)
 
-        player_group.update(dt, pillar_group)
+        player_group.update(dt, obstacle_group)
         crawler_group.update(dt, pillar_group)
 
         pygame.display.flip()

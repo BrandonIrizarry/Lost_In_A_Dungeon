@@ -175,21 +175,33 @@ def compute_cell_projection(grid: Grid, x: int, y: int) -> list[Point]:
     # should be closed off by pillars.
     cell = ~grid.grid[x][y]
 
+    # In the final map, each square is conceived of as a 2x2 empty
+    # area, surrounded by a border one tile thick. The area altogether
+    # is therefore 4x4. To reach the upper left corner of one of these
+    # areas, one must move in increments of three tile units.
+    #
+    # To wit, (xi, yi) is the upper left corner.
     xi, yi = 3 * x, 3 * y
 
     # Add the four corners of the projection to 'targets', since these
     # otherwise appear as gaps in the displayed maze.
     targets.extend([(xi, yi), (xi + 3, yi), (xi, yi + 3), (xi + 3, yi + 3)])
 
+    # Add walls to each direction, whenever specified.
+    #
+    # The north wall:
     if Cell.UP in cell:
         targets.extend([(xi + 1, yi), (xi + 2, yi)])
 
+    # The south wall:
     if Cell.DOWN in cell:
         targets.extend([(xi + 1, yi + 3), (xi + 2, yi + 3)])
 
+    # The west wall:
     if Cell.LEFT in cell:
         targets.extend([(xi, yi + 1), (xi, yi + 2)])
 
+    # The east wall:
     if Cell.RIGHT in cell:
         targets.extend([(xi + 3, yi + 1), (xi + 3, yi + 2)])
 

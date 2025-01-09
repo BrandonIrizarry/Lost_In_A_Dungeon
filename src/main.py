@@ -113,7 +113,7 @@ class Crawler(MovingThing):
         self.speed = 100
         self.unit_velocity = cs.DOWN
 
-    def update(self, dt, obstacle_group):
+    def update(self, dt, **collision_type: pygame.sprite.Group):
         self.timer -= dt
 
         if self.timer <= 0:
@@ -125,7 +125,7 @@ class Crawler(MovingThing):
 
         velocity = Vector2(self.unit_velocity)
         displacement = self.check_obstacle(velocity * self.speed * dt,
-                                           obstacle_group)
+                                           collision_type["block"])
 
         # In the case of the crawler, zero-displacement only occurs
         # during a collision. In that case, set the timer to 0 to
@@ -297,7 +297,9 @@ def mainloop():
             "block": obstacle_group
         })
 
-        crawler_group.update(dt, obstacle_group)
+        crawler_group.update(dt, **{
+            "block": obstacle_group
+        })
 
         pygame.display.flip()
 

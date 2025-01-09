@@ -1,5 +1,6 @@
 from enum import Flag, auto
 import random
+from typedefs import Point
 
 
 class Cell(Flag):
@@ -20,9 +21,6 @@ class Cell(Flag):
 
     def visited(self) -> bool:
         return not self.unvisited()
-
-
-type Point = tuple[int, int]
 
 
 def get_neighbors(x, y, xmax, ymax) -> list[Point]:

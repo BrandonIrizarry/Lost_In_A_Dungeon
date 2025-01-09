@@ -2,11 +2,9 @@ import pygame
 import random
 import constants as cs
 from tiledef import TileDef
+from typedefs import Point
 import maze
 from pygame.math import Vector2
-
-
-type Point = tuple[int, int]
 
 
 class Spritesheet:

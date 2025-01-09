@@ -201,10 +201,16 @@ class Crawler(MovingThing):
         displacement = self.check_obstacle(velocity * self.speed * dt,
                                            obstacle_group)
 
+        # In the case of the crawler, zero-displacement only occurs
+        # during a collision. In that case, set the timer to 0 to
+        # prevent the crawler from temporarily being stuck in that
+        # position.
         if displacement != pygame.math.Vector2(0, 0):
             self.rect.move_ip(displacement)
             dx, dy = self.unit_velocity
             self.animate(dt, dx, dy)
+        else:
+            self.timer = 0
 
 
 class Fixture(pygame.sprite.Sprite):

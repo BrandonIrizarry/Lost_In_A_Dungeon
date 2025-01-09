@@ -191,7 +191,10 @@ class Crawler(MovingThing):
         self.timer -= dt
 
         if self.timer <= 0:
-            self.unit_velocity = random.choice([cs.UP, cs.DOWN, cs.LEFT, cs.RIGHT])
+            self.unit_velocity = random.choice([cs.UP,
+                                                cs.DOWN,
+                                                cs.LEFT,
+                                                cs.RIGHT])
             self.timer = self.cooldown
 
         velocity = Vector2(self.unit_velocity)
@@ -277,6 +280,7 @@ crawler = Crawler(2, 2, **{
 })
 
 crawler_group.add(crawler)
+
 
 def get_next_crawler_move(crawler: MovingThing) -> Point:
     dx, dy = random.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])

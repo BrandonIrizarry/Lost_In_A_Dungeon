@@ -109,7 +109,6 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
                 collided = tentative.colliderect(sprite.rect)
 
                 if collided:
-                    print("took")
                     self.__class__.kill(self)
                     break
 
@@ -334,13 +333,11 @@ class LevelDefinition:
     def define_crawlers(self):
         """Define initial crawler positions in the level."""
 
-        crawler_group: pygame.sprite.Group = pygame.sprite.Group()
-
         for x in range(cs.NUM_TILES_X):
             for y in range(cs.NUM_TILES_Y):
                 if (x, y) not in self.pillar_positions:
                     if random.random() <= 1/100:
-                        crawler = Crawler.spawn(x, y)
+                        Crawler.spawn(x, y)
 
     def define_player(self) -> pygame.sprite.GroupSingle:
         """Define the initial player position."""
@@ -381,7 +378,6 @@ def mainloop():
 
     Player.spawn(1, 1)
     level.define_crawlers()
-
 
     while True:
         for event in pygame.event.get():

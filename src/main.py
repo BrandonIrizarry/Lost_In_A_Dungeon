@@ -85,38 +85,43 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
     def check_take_damage(self,
                           move_by: Vector2,
-                          groups: list[pygame.sprite.Group]) -> bool:
-        """Return whether this sprite took damage upon being updated."""
-
-        tentative = self.rect.move(move_by)
-
-        for group in groups:
-            for sprite in group:
-                collided = tentative.colliderect(sprite.rect)
-
-                if collided:
-                    return True
-
-        return False
-
-    def check_do_damage(self,
-                        move_by: Vector2,
-                        groups: list[pygame.sprite.Group]) -> bool:
-        """Return whether this sprite inflicted damage upon being
-        updated.
+                          groups: list[pygame.sprite.Group]):
+        """Set 'self.dead' according to whether this sprite initiated
+        a collision with a deadly sprite.
 
         """
 
         tentative = self.rect.move(move_by)
+        collided = False
 
         for group in groups:
             for sprite in group:
                 collided = tentative.colliderect(sprite.rect)
 
                 if collided:
-                    return True
+                    break
 
-        return False
+        self.dead = collided
+
+    def check_do_damage(self,
+                        move_by: Vector2,
+                        groups: list[pygame.sprite.Group]):
+        """According to whether this sprite inflicted damage on
+        another sprite, set the latter's 'self.dead'.
+
+        """
+
+        tentative = self.rect.move(move_by)
+        collided = False
+
+        for group in groups:
+            for sprite in group:
+                collided = tentative.colliderect(sprite.rect)
+
+                if collided:
+                    break
+
+        sprite.dead = collided
 
     @abc.abstractmethod
     def update(self, dt, collision_type: dict[CollisionType,
@@ -171,8 +176,9 @@ class Player(Moving):
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
-        self.dead = self.check_take_damage(proposed_disp,
-                                           coltype[CollisionType.TAKE_DAMAGE])
+        # Maybe set 'self.dead'.
+        self.check_take_damage(proposed_disp,
+                               coltype[CollisionType.TAKE_DAMAGE])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
@@ -208,7 +214,6 @@ class Crawler(Moving):
         self.cooldown = 1.0
         self.timer = self.cooldown
         self.speed = 100
-        self.damage_delivered = False
 
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):
@@ -227,10 +232,9 @@ class Crawler(Moving):
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
-        # Alias this, to keep long lines under control.
-        do_damage = CollisionType.DO_DAMAGE
-        self.damage_delivered = self.check_do_damage(proposed_disp,
-                                                     coltype[do_damage])
+        # Maybe set the attacked sprite's 'self.dead'.
+        self.check_do_damage(proposed_disp,
+                             coltype[CollisionType.DO_DAMAGE])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a

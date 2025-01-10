@@ -123,10 +123,12 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
 
 class Fixture(pygame.sprite.Sprite):
-    """A sprite not directly involved in gameplay.
+    """A sprite that doesn't move of its own accord.
 
-    For example, they never move. Such a sprite may or may not be
-    collidable, but let the groups handle that.
+    It only consists of an image and a rect, and has no update method.
+
+    Such a sprite may or may not be collidable, according to its
+    group.
 
     """
 

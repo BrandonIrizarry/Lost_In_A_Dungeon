@@ -64,14 +64,15 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
     def check_block(self,
                     move_by: Vector2,
-                    obstacle_groups: list[pygame.sprite.Group]) -> Vector2:
-        """Return displacement, or zero-vector if an obstacle is encountered.
+                    groups: list[pygame.sprite.Group]) -> Vector2:
+        """Return displacement, or zero-vector if an obstacle is
+        encountered.
 
         """
 
         tentative_pos = self.rect.move(move_by)
 
-        for group in obstacle_groups:
+        for group in groups:
             for obstacle in group:
                 collided = tentative_pos.colliderect(obstacle.rect)
 
@@ -84,14 +85,31 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
     def check_take_damage(self,
                           move_by: Vector2,
-                          damage_groups: list[pygame.sprite.Group]) -> bool:
-        """Check for a damage collision initiated by this sprite.
-
-        Return whether a damaging hit occurred."""
+                          groups: list[pygame.sprite.Group]) -> bool:
+        """Return whether this sprite took damage upon being updated."""
 
         tentative = self.rect.move(move_by)
 
-        for group in damage_groups:
+        for group in groups:
+            for sprite in group:
+                collided = tentative.colliderect(sprite.rect)
+
+                if collided:
+                    return True
+
+        return False
+
+    def check_did_damage(self,
+                         move_by: Vector2,
+                         groups: list[pygame.sprite.Group]) -> bool:
+        """Return whether this sprite inflicted damage upon being
+        updated.
+
+        """
+
+        tentative = self.rect.move(move_by)
+
+        for group in groups:
             for sprite in group:
                 collided = tentative.colliderect(sprite.rect)
 
@@ -190,6 +208,7 @@ class Crawler(Moving):
         self.cooldown = 1.0
         self.timer = self.cooldown
         self.speed = 100
+        self.damage_delivered = False
 
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):
@@ -207,6 +226,11 @@ class Crawler(Moving):
         proposed_disp = Vector2(dx, dy) * self.speed * dt
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
+
+        # Alias this, to keep long lines under control.
+        do_damage = CollisionType.DO_DAMAGE
+        self.damage_delivered = self.check_did_damage(proposed_disp,
+                                                      coltype[do_damage])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
@@ -351,7 +375,8 @@ def mainloop():
             return
 
         crawler_group.update(dt, {
-            CollisionType.BLOCK: [crawler_group, pillar_group, player_group],
+            CollisionType.BLOCK: [crawler_group, pillar_group],
+            CollisionType.DO_DAMAGE: [player_group],
         })
 
         pygame.display.flip()

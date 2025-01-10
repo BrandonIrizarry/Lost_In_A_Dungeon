@@ -211,8 +211,8 @@ class Player(Moving):
             else:
                 sx, sy = cs.compute_grid_coords(self.rect.centerx,
                                                 self.rect.centery)
-                sword = self.get_sword(sx + self.direction[0],
-                                       sy + self.direction[1])
+                sword = self.get_sword(sx + self.direction[0] * 0.5,
+                                       sy + self.direction[1] * 0.5)
                 self.sword_group.add(sword)
 
         proposed_disp = Vector2(dx, dy) * self.speed * dt

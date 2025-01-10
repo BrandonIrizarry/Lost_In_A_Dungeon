@@ -43,7 +43,8 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         self.image = self.motions_table[self.direction][0]
 
         xs, ys = cs.compute_pixel_coords(x, y)
-        self.rect = self.image.get_rect(x=xs, y=ys).inflate(-5.0, -5.0)
+        self.rect: pygame.Rect = self.image.get_rect(x=xs, y=ys)
+        self.rect = self.rect.inflate(-5.0, -5.0)
 
     def animate(self, dt):
         """Update the image used to display the sprite, based on the
@@ -133,8 +134,27 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         pass
 
 
+class Fixture(pygame.sprite.Sprite):
+    """A sprite not directly involved in gameplay.
+
+    For example, they never move. Such a sprite may or may not be
+    collidable, but let the groups handle that.
+
+    """
+
+    def __init__(self, x: int, y: int, image: pygame.Surface):
+        super().__init__()
+
+        self.image = image
+
+        xs, ys = cs.compute_pixel_coords(x, y)
+        self.rect = self.image.get_rect(x=xs, y=ys)
+
+
 class Player(Moving):
     """The player, controllable by the user via the keyboard."""
+
+    sword_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 
     def __init__(self, x: int, y: int):
         animations = {
@@ -149,6 +169,22 @@ class Player(Moving):
          }
 
         super().__init__(x, y, **animations)
+
+    def get_sword(self, x, y):
+        """Get the sword sprite."""
+        tile_def = None
+
+        match self.direction:
+            case cs.UP:
+                tile_def = TileDef.SWORD_UP
+            case cs.DOWN:
+                tile_def = TileDef.SWORD_DOWN
+            case cs.LEFT:
+                tile_def = TileDef.SWORD_LEFT
+            case cs.RIGHT:
+                tile_def = TileDef.SWORD_RIGHT
+
+        return Fixture(x, y, sheet.get(tile_def))
 
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):
@@ -169,8 +205,15 @@ class Player(Moving):
             dx = -1
         elif keys[pygame.K_d]:
             dx = 1
-
-        self.direction = (dx, dy)
+        elif keys[pygame.K_k]:
+            if self.sword_group.sprites() != []:
+                self.sword_group.empty()
+            else:
+                sx, sy = cs.compute_grid_coords(self.rect.centerx,
+                                                self.rect.centery)
+                sword = self.get_sword(sx + self.direction[0],
+                                       sy + self.direction[1])
+                self.sword_group.add(sword)
 
         proposed_disp = Vector2(dx, dy) * self.speed * dt
         actual_disp = self.check_block(proposed_disp,
@@ -187,6 +230,10 @@ class Player(Moving):
         if actual_disp != Vector2(0, 0):
             self.rect.move_ip(actual_disp)
             self.animate(dt)
+
+        # Update the player's direction.
+        if dx != 0 or dy != 0:
+            self.direction = (dx, dy)
 
 
 class Crawler(Moving):
@@ -247,22 +294,6 @@ class Crawler(Moving):
             self.timer = 0
 
 
-class Fixture(pygame.sprite.Sprite):
-    """A class for describing a sprite not directly involved in
-    gameplay. For example, they never move. Such a sprite may or may
-    not be collidable, but let the groups handle that.
-
-    """
-
-    def __init__(self, x: int, y: int, image: pygame.Surface):
-        super().__init__()
-
-        self.image = image
-
-        xs, ys = cs.compute_pixel_coords(x, y)
-        self.rect = self.image.get_rect(x=xs, y=ys)
-
-
 class LevelDefinition:
     def __init__(self, sheet: Spritesheet):
         # Use a set, so that we can remove duplicates (we don't add a pillar
@@ -309,7 +340,7 @@ class LevelDefinition:
         for x in range(cs.NUM_TILES_X):
             for y in range(cs.NUM_TILES_Y):
                 if (x, y) not in self.pillar_positions:
-                    if random.random() <= 1/20:
+                    if random.random() <= 1/50:
                         crawler = Crawler(x, y)
                         crawler_group.add(crawler)
 
@@ -350,6 +381,7 @@ def mainloop():
     floor_group = level.define_floor_tiles()
     crawler_group = level.define_crawlers()
     player_group = level.define_player()
+    sword_group = Player.sword_group
 
     while True:
         for event in pygame.event.get():
@@ -369,6 +401,7 @@ def mainloop():
         floor_group.draw(screen)
         player_group.draw(screen)
         crawler_group.draw(screen)
+        sword_group.draw(screen)
 
         player_group.sprite.update(dt, {
             CollisionType.BLOCK: [crawler_group, pillar_group],
@@ -381,6 +414,7 @@ def mainloop():
         crawler_group.update(dt, {
             CollisionType.BLOCK: [crawler_group, pillar_group],
             CollisionType.DO_DAMAGE: [player_group],
+            CollisionType.TAKE_DAMAGE: [sword_group],
         })
 
         pygame.display.flip()

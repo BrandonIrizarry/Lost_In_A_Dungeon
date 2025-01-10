@@ -301,6 +301,9 @@ class Crawler(Moving):
         self.check_do_damage(proposed_disp,
                              coltype[CollisionType.DO_DAMAGE])
 
+        self.check_take_damage(proposed_disp,
+                               coltype[CollisionType.TAKE_DAMAGE])
+
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
         # key to move the player), or because the player encountered
@@ -431,7 +434,7 @@ def mainloop():
         crawler_group.update(dt, {
             CollisionType.BLOCK: [crawler_group, pillar_group],
             CollisionType.DO_DAMAGE: [player_group],
-            CollisionType.TAKE_DAMAGE: [],
+            CollisionType.TAKE_DAMAGE: [sword_group],
         })
 
         if player_group.sprites() == []:

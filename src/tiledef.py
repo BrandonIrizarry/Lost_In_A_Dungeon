@@ -8,7 +8,8 @@ class TileDef(Enum):
 
     A TileDef is a tuple whose first member is a pair of coordinates
     into the spritesheet, and whose second member is the color_key
-    needed to display that sprite correctly.
+    needed to identify that sprite's background color, so it can be
+    removed when displaying the sprite.
 
     Each tile is assumed to be 16x16 pixels.
 

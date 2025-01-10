@@ -46,6 +46,17 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         self.rect: pygame.Rect = self.image.get_rect(x=xs, y=ys)
         self.rect = self.rect.inflate(-5.0, -5.0)
 
+    @classmethod
+    def spawn(cls, x, y):
+        """Spawn an instance of this class."""
+        moving = cls(x, y)
+        cls.group.add(moving)
+
+    @classmethod
+    def kill(cls, sprite):
+        """Remove an instance of this class from play."""
+        cls.group.remove(sprite)
+
     def animate(self, dt):
         """Update the image used to display the sprite, based on the
         current direction the sprite is facing.

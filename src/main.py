@@ -7,6 +7,17 @@ from spritesheet import Spritesheet
 import maze
 from pygame.math import Vector2
 import abc
+from enum import Enum, auto
+
+
+class CollisionType(Enum):
+    """Define a collision type based on the kind of action or result
+    meant to take place.
+
+    """
+    TAKE_DAMAGE = auto(),
+    DO_DAMAGE = auto(),
+    BLOCK = auto()
 
 
 class Moving(pygame.sprite.Sprite, abc.ABC):
@@ -90,7 +101,8 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         return False
 
     @abc.abstractmethod
-    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
+    def update(self, dt, collision_type: dict[CollisionType,
+                                              list[pygame.sprite.Group]]):
         """This sprite's 'update' method, to be overridden by child
         classes.
 
@@ -115,7 +127,8 @@ class Player(Moving):
 
         super().__init__(x, y, **animations)
 
-    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
+    def update(self, dt, coltype: dict[CollisionType,
+                                       list[pygame.sprite.Group]]):
         """The Player's 'update' override, largely based on the user's
         keyboard input.
 
@@ -138,10 +151,10 @@ class Player(Moving):
 
         proposed_disp = Vector2(dx, dy) * self.speed * dt
         actual_disp = self.check_block(proposed_disp,
-                                       collision_type["block"])
+                                       coltype[CollisionType.BLOCK])
 
         self.dead = self.check_damage(proposed_disp,
-                                      collision_type["damage"])
+                                      coltype[CollisionType.TAKE_DAMAGE])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
@@ -178,7 +191,8 @@ class Crawler(Moving):
         self.timer = self.cooldown
         self.speed = 100
 
-    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
+    def update(self, dt, coltype: dict[CollisionType,
+                                       list[pygame.sprite.Group]]):
         self.timer -= dt
 
         if self.timer <= 0:
@@ -192,10 +206,7 @@ class Crawler(Moving):
 
         proposed_disp = Vector2(dx, dy) * self.speed * dt
         actual_disp = self.check_block(proposed_disp,
-                                       collision_type["block"])
-
-        self.dead = self.check_damage(proposed_disp,
-                                      collision_type["damage"])
+                                       coltype[CollisionType.BLOCK])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
@@ -331,17 +342,16 @@ def mainloop():
         player_group.draw(screen)
         crawler_group.draw(screen)
 
-        player_group.sprite.update(dt, **{
-            "block": [crawler_group, pillar_group],
-            "damage": [crawler_group],
+        player_group.sprite.update(dt, {
+            CollisionType.BLOCK: [crawler_group, pillar_group],
+            CollisionType.TAKE_DAMAGE: [crawler_group],
         })
 
         if player_group.sprite.dead:
             return
 
-        crawler_group.update(dt, **{
-            "block": [crawler_group, pillar_group, player_group],
-            "damage": [],
+        crawler_group.update(dt, {
+            CollisionType.BLOCK: [crawler_group, pillar_group, player_group],
         })
 
         pygame.display.flip()

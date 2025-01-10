@@ -37,7 +37,6 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         self.animation_index = 0
         self.speed = 200
         self.direction = cs.DOWN
-        self.dead = False
 
         # Define the image and rect of this sprite.
         self.image = self.motions_table[self.direction][0]
@@ -98,7 +97,7 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
     def check_take_damage(self,
                           move_by: Vector2,
                           groups: list[pygame.sprite.Group]):
-        """Set 'self.dead' according to whether this sprite initiated
+        """Check whether this sprite initiated
         a collision with a deadly sprite.
 
         """
@@ -111,17 +110,13 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
                 if collided:
                     print("took")
-                    self.dead = True
                     self.__class__.kill(self)
                     break
 
     def check_do_damage(self,
                         move_by: Vector2,
                         groups: list[pygame.sprite.Group]):
-        """According to whether this sprite inflicted damage on
-        another sprite, set the latter's 'self.dead'.
-
-        """
+        """Check whether this sprite inflicted damage"""
 
         tentative = self.rect.move(move_by)
 
@@ -131,7 +126,6 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
                 if collided:
                     print("did")
-                    sprite.dead = True
                     sprite.__class__.kill(sprite)
                     break
 
@@ -304,7 +298,6 @@ class Crawler(Moving):
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
-        # Maybe set the attacked sprite's 'self.dead'.
         self.check_do_damage(proposed_disp,
                              coltype[CollisionType.DO_DAMAGE])
 

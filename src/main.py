@@ -89,24 +89,6 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
         return False
 
-    def handle(self, dt, **collision_type: list[pygame.sprite.Group]):
-        dx, dy = self.direction
-
-        proposed_disp = Vector2(dx, dy) * self.speed * dt
-        actual_disp = self.check_block(proposed_disp,
-                                       collision_type["block"])
-
-        self.dead = self.check_damage(proposed_disp,
-                                      collision_type["damage"])
-
-        # The displacement could be the zero vector, either because
-        # (dx, dy) is the zero tuple (because the user didn't press a
-        # key to move the player), or because the player encountered
-        # an obstacle blocking its path.
-        if actual_disp != Vector2(0, 0):
-            self.rect.move_ip(actual_disp)
-            self.animate(dt)
-
     @abc.abstractmethod
     def update(self, dt, **collision_type: list[pygame.sprite.Group]):
         """This sprite's 'update' method, to be overridden by child
@@ -153,7 +135,21 @@ class Player(Moving):
             dx = 1
 
         self.direction = (dx, dy)
-        self.handle(dt, **collision_type)
+
+        proposed_disp = Vector2(dx, dy) * self.speed * dt
+        actual_disp = self.check_block(proposed_disp,
+                                       collision_type["block"])
+
+        self.dead = self.check_damage(proposed_disp,
+                                      collision_type["damage"])
+
+        # The displacement could be the zero vector, either because
+        # (dx, dy) is the zero tuple (because the user didn't press a
+        # key to move the player), or because the player encountered
+        # an obstacle blocking its path.
+        if actual_disp != Vector2(0, 0):
+            self.rect.move_ip(actual_disp)
+            self.animate(dt)
 
 
 class Crawler(Moving):
@@ -192,7 +188,24 @@ class Crawler(Moving):
                                             cs.RIGHT])
             self.timer = self.cooldown
 
-        self.handle(dt, **collision_type)
+        dx, dy = self.direction
+
+        proposed_disp = Vector2(dx, dy) * self.speed * dt
+        actual_disp = self.check_block(proposed_disp,
+                                       collision_type["block"])
+
+        self.dead = self.check_damage(proposed_disp,
+                                      collision_type["damage"])
+
+        # The displacement could be the zero vector, either because
+        # (dx, dy) is the zero tuple (because the user didn't press a
+        # key to move the player), or because the player encountered
+        # an obstacle blocking its path.
+        if actual_disp != Vector2(0, 0):
+            self.rect.move_ip(actual_disp)
+            self.animate(dt)
+        else:
+            self.timer = 0
 
 
 class Fixture(pygame.sprite.Sprite):

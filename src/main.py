@@ -6,17 +6,14 @@ from typedefs import Point
 from spritesheet import Spritesheet
 import maze
 from pygame.math import Vector2
+import abc
 
 
-class MovingThing(pygame.sprite.Sprite):
-    """Parent class (morally) of player and crawler sprites.
-
-    Right now player is a direct instance of this class.
-
-    """
+class Moving(pygame.sprite.Sprite, abc.ABC):
+    """Parent class of player and crawler sprites."""
 
     def __init__(self, x: int, y: int, **animations):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.motions_table = {
             cs.DOWN: [animations["down"][0], animations["down"][1]],
@@ -26,30 +23,33 @@ class MovingThing(pygame.sprite.Sprite):
         }
 
         self.animation_speed = 5
-        self.index = 0
+        self.animation_index = 0
         self.speed = 200
+        self.direction = cs.DOWN
+        self.dead = False
 
         # Define the image and rect of this sprite.
-        self.image = self.motions_table[cs.DOWN][0]
+        self.image = self.motions_table[self.direction][0]
 
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys).inflate(-5.0, -5.0)
 
-    def animate(self, dt, dx, dy):
+    def animate(self, dt):
         """Update the image used to display the sprite, based on the
-        direction the sprite is facing.
+        current direction the sprite is facing.
+
+        The current direction is stored in 'self.direction'.
 
         """
 
-        self.index += self.animation_speed * dt
-        walk = (dx, dy)
+        images = self.motions_table[self.direction]
 
-        images = self.motions_table[walk]
+        self.animation_index += self.animation_speed * dt
 
-        if self.index >= len(images):
-            self.index = 0
+        if self.animation_index >= len(images):
+            self.animation_index = 0
 
-        self.image = images[int(self.index)]
+        self.image = images[int(self.animation_index)]
 
     def check_block(self,
                     move_by: Vector2,
@@ -58,12 +58,11 @@ class MovingThing(pygame.sprite.Sprite):
 
         """
 
-        # tentative player position.
-        tentative = self.rect.move(move_by)
+        tentative_pos = self.rect.move(move_by)
 
         for group in obstacle_groups:
             for obstacle in group:
-                collided = tentative.colliderect(obstacle.rect)
+                collided = tentative_pos.colliderect(obstacle.rect)
 
                 # Make sure that a given sprite can't "collide" with
                 # itself.
@@ -90,9 +89,56 @@ class MovingThing(pygame.sprite.Sprite):
 
         return False
 
-    def update(self, dt, **collision_type: list[pygame.sprite.Group])\
-            -> bool:
-        """Update the sprite's position."""
+    def handle(self, dt, **collision_type: list[pygame.sprite.Group]):
+        dx, dy = self.direction
+
+        proposed_disp = Vector2(dx, dy) * self.speed * dt
+        actual_disp = self.check_block(proposed_disp,
+                                       collision_type["block"])
+
+        self.dead = self.check_damage(proposed_disp,
+                                      collision_type["damage"])
+
+        # The displacement could be the zero vector, either because
+        # (dx, dy) is the zero tuple (because the user didn't press a
+        # key to move the player), or because the player encountered
+        # an obstacle blocking its path.
+        if actual_disp != Vector2(0, 0):
+            self.rect.move_ip(actual_disp)
+            self.animate(dt)
+
+    @abc.abstractmethod
+    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
+        """This sprite's 'update' method, to be overridden by child
+        classes.
+
+        """
+        pass
+
+
+class Player(Moving):
+    """The player, controllable by the user via the keyboard."""
+
+    def __init__(self, x: int, y: int):
+        animations = {
+            "down": sheet.get_all([TileDef.PLAYER_DOWN_1,
+                                   TileDef.PLAYER_DOWN_2]),
+            "up": sheet.get_all([TileDef.PLAYER_UP_1,
+                                 TileDef.PLAYER_UP_2]),
+            "left": sheet.get_all([TileDef.PLAYER_LEFT_1,
+                                   TileDef.PLAYER_LEFT_2]),
+            "right": sheet.get_all([TileDef.PLAYER_RIGHT_1,
+                                    TileDef.PLAYER_RIGHT_2])
+         }
+
+        super().__init__(x, y, **animations)
+
+    def update(self, dt, **collision_type: list[pygame.sprite.Group]):
+        """The Player's 'update' override, largely based on the user's
+        keyboard input.
+
+        """
+
         dx, dy = 0, 0
 
         keys = pygame.key.get_pressed()
@@ -106,63 +152,47 @@ class MovingThing(pygame.sprite.Sprite):
         elif keys[pygame.K_d]:
             dx = 1
 
-        unit_velocity = Vector2(dx, dy)
-        displacement = self.check_block(unit_velocity * self.speed * dt,
-                                        collision_type["block"])
-
-        damage = self.check_damage(unit_velocity * self.speed * dt,
-                                   collision_type["damage"])
-
-        if damage:
-            return True
-
-        # The displacement could be the zero vector, either because
-        # (dx, dy) is the zero tuple (because the user didn't press a
-        # key to move the player), or because the player encountered
-        # an obstacle blocking its path.
-        if displacement != Vector2(0, 0):
-            self.rect.move_ip(displacement)
-            self.animate(dt, dx, dy)
+        self.direction = (dx, dy)
+        self.handle(dt, **collision_type)
 
 
-class Crawler(MovingThing):
+class Crawler(Moving):
     """A subclass of MovingThing applicable to crawlers.
 
     The only difference is in the implementation of 'update'.
 
     """
 
-    def __init__(self, x: int, y: int, **animations):
+    def __init__(self, x: int, y: int):
+        animations = {
+            "down": sheet.get_all([TileDef.CRAWLER_DOWN_1,
+                                   TileDef.CRAWLER_DOWN_2]),
+            "up": sheet.get_all([TileDef.CRAWLER_UP_1,
+                                 TileDef.CRAWLER_UP_2]),
+            "left": sheet.get_all([TileDef.CRAWLER_LEFT_1,
+                                   TileDef.CRAWLER_LEFT_2]),
+            "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1,
+                                    TileDef.CRAWLER_RIGHT_2])
+        }
+
         super().__init__(x, y, **animations)
+
+        # Tweaks for this particular sprite.
         self.cooldown = 1.0
         self.timer = self.cooldown
         self.speed = 100
-        self.unit_velocity = cs.DOWN
 
     def update(self, dt, **collision_type: list[pygame.sprite.Group]):
         self.timer -= dt
 
         if self.timer <= 0:
-            self.unit_velocity = random.choice([cs.UP,
-                                                cs.DOWN,
-                                                cs.LEFT,
-                                                cs.RIGHT])
+            self.direction = random.choice([cs.UP,
+                                            cs.DOWN,
+                                            cs.LEFT,
+                                            cs.RIGHT])
             self.timer = self.cooldown
 
-        velocity = Vector2(self.unit_velocity)
-        displacement = self.check_block(velocity * self.speed * dt,
-                                        collision_type["block"])
-
-        # In the case of the crawler, zero-displacement only occurs
-        # during a collision. In that case, set the timer to 0 to
-        # prevent the crawler from temporarily being stuck in that
-        # position.
-        if displacement != pygame.math.Vector2(0, 0):
-            self.rect.move_ip(displacement)
-            dx, dy = self.unit_velocity
-            self.animate(dt, dx, dy)
-        else:
-            self.timer = 0
+        self.handle(dt, **collision_type)
 
 
 class Fixture(pygame.sprite.Sprite):
@@ -179,32 +209,6 @@ class Fixture(pygame.sprite.Sprite):
 
         xs, ys = cs.compute_pixel_coords(x, y)
         self.rect = self.image.get_rect(x=xs, y=ys)
-
-
-pygame.init()
-screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
-screen = pygame.display.set_mode(screen_dimensions)
-sheet = Spritesheet("../graphics/spritesheet.png")
-
-grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
-grid.carve()
-
-
-def make_crawler(x: int, y: int) -> Crawler:
-    """Shorthand for adding a crawler to the level."""
-
-    crawler = Crawler(x, y, **{
-        "down": sheet.get_all([TileDef.CRAWLER_DOWN_1,
-                               TileDef.CRAWLER_DOWN_2]),
-        "up": sheet.get_all([TileDef.CRAWLER_UP_1,
-                             TileDef.CRAWLER_UP_2]),
-        "left": sheet.get_all([TileDef.CRAWLER_LEFT_1,
-                               TileDef.CRAWLER_LEFT_2]),
-        "right": sheet.get_all([TileDef.CRAWLER_RIGHT_1,
-                                TileDef.CRAWLER_RIGHT_2])
-    })
-
-    return crawler
 
 
 class LevelDefinition:
@@ -254,7 +258,7 @@ class LevelDefinition:
             for y in range(cs.NUM_TILES_Y):
                 if (x, y) not in self.pillar_positions:
                     if random.random() <= 1/20:
-                        crawler = make_crawler(x, y)
+                        crawler = Crawler(x, y)
                         crawler_group.add(crawler)
 
         return crawler_group
@@ -264,20 +268,19 @@ class LevelDefinition:
 
         player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 
-        player = MovingThing(1, 1, **{
-            "down": sheet.get_all([TileDef.PLAYER_DOWN_1,
-                                   TileDef.PLAYER_DOWN_2]),
-            "up": sheet.get_all([TileDef.PLAYER_UP_1,
-                                 TileDef.PLAYER_UP_2]),
-            "left": sheet.get_all([TileDef.PLAYER_LEFT_1,
-                                   TileDef.PLAYER_LEFT_2]),
-            "right": sheet.get_all([TileDef.PLAYER_RIGHT_1,
-                                    TileDef.PLAYER_RIGHT_2])
-        })
-
+        player = Player(1, 1)
         player_group.add(player)
 
         return player_group
+
+
+pygame.init()
+screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
+screen = pygame.display.set_mode(screen_dimensions)
+sheet = Spritesheet("../graphics/spritesheet.png")
+
+grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
+grid.carve()
 
 
 def mainloop():
@@ -324,7 +327,8 @@ def mainloop():
             return
 
         crawler_group.update(dt, **{
-            "block": [crawler_group, pillar_group, player_group]
+            "block": [crawler_group, pillar_group, player_group],
+            "damage": [],
         })
 
         pygame.display.flip()

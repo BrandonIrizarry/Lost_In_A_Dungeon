@@ -110,6 +110,7 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
                 collided = tentative.colliderect(sprite.rect)
 
                 if collided:
+                    print("took")
                     self.dead = True
                     self.__class__.kill(self)
                     break
@@ -129,6 +130,7 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
                 collided = tentative.colliderect(sprite.rect)
 
                 if collided:
+                    print("did")
                     sprite.dead = True
                     sprite.__class__.kill(sprite)
                     break
@@ -238,7 +240,9 @@ class Player(Moving):
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
-        # Maybe set 'self.dead'.
+        self.check_do_damage(proposed_disp,
+                             coltype[CollisionType.DO_DAMAGE])
+
         self.check_take_damage(proposed_disp,
                                coltype[CollisionType.TAKE_DAMAGE])
 
@@ -361,7 +365,7 @@ class LevelDefinition:
         for x in range(cs.NUM_TILES_X):
             for y in range(cs.NUM_TILES_Y):
                 if (x, y) not in self.pillar_positions:
-                    if random.random() <= 1/50:
+                    if random.random() <= 1/100:
                         crawler = Crawler.spawn(x, y)
 
     def define_player(self) -> pygame.sprite.GroupSingle:
@@ -426,15 +430,15 @@ def mainloop():
         sword_group.draw(screen)
 
         player_group.update(dt, {
-            CollisionType.BLOCK: [crawler_group, pillar_group],
-            CollisionType.TAKE_DAMAGE: [crawler_group],
+            CollisionType.BLOCK: [pillar_group],
+            CollisionType.TAKE_DAMAGE: [],
+            CollisionType.DO_DAMAGE: [],
         })
-
 
         crawler_group.update(dt, {
             CollisionType.BLOCK: [crawler_group, pillar_group],
             CollisionType.DO_DAMAGE: [player_group],
-            CollisionType.TAKE_DAMAGE: [sword_group],
+            CollisionType.TAKE_DAMAGE: [],
         })
 
         if player_group.sprites() == []:

@@ -171,7 +171,7 @@ class Player(Moving):
         super().__init__(x, y, **animations)
 
         self.cooldown = 0.2
-        self.timer = 0
+        self.timer = 0.0
 
     def get_sword(self, x, y):
         """Get the sword sprite."""

@@ -331,12 +331,12 @@ def mainloop():
         player_group.draw(screen)
         crawler_group.draw(screen)
 
-        dead = player_group.sprite.update(dt, **{
+        player_group.sprite.update(dt, **{
             "block": [crawler_group, pillar_group],
             "damage": [crawler_group],
         })
 
-        if dead:
+        if player_group.sprite.dead:
             return
 
         crawler_group.update(dt, **{

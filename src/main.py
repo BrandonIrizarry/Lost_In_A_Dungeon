@@ -104,16 +104,15 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         """
 
         tentative = self.rect.move(move_by)
-        collided = False
 
         for group in groups:
             for sprite in group:
                 collided = tentative.colliderect(sprite.rect)
 
                 if collided:
+                    self.dead = True
+                    self.__class__.kill(self)
                     break
-
-        self.dead = collided
 
     def check_do_damage(self,
                         move_by: Vector2,
@@ -124,16 +123,15 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         """
 
         tentative = self.rect.move(move_by)
-        collided = False
 
         for group in groups:
             for sprite in group:
                 collided = tentative.colliderect(sprite.rect)
 
                 if collided:
+                    sprite.dead = True
+                    sprite.__class__.kill(sprite)
                     break
-
-        sprite.dead = collided
 
     @abc.abstractmethod
     def update(self, dt, collision_type: dict[CollisionType,
@@ -165,6 +163,7 @@ class Fixture(pygame.sprite.Sprite):
 class Player(Moving):
     """The player, controllable by the user via the keyboard."""
 
+    group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
     sword_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
 
     def __init__(self, x: int, y: int):
@@ -263,6 +262,8 @@ class Crawler(Moving):
 
     """
 
+    group: pygame.sprite.Group = pygame.sprite.Group()
+
     def __init__(self, x: int, y: int):
         animations = {
             "down": sheet.get_all([TileDef.CRAWLER_DOWN_1,
@@ -352,7 +353,7 @@ class LevelDefinition:
 
         return floor_group
 
-    def define_crawlers(self) -> pygame.sprite.Group:
+    def define_crawlers(self):
         """Define initial crawler positions in the level."""
 
         crawler_group: pygame.sprite.Group = pygame.sprite.Group()
@@ -361,10 +362,7 @@ class LevelDefinition:
             for y in range(cs.NUM_TILES_Y):
                 if (x, y) not in self.pillar_positions:
                     if random.random() <= 1/50:
-                        crawler = Crawler(x, y)
-                        crawler_group.add(crawler)
-
-        return crawler_group
+                        crawler = Crawler.spawn(x, y)
 
     def define_player(self) -> pygame.sprite.GroupSingle:
         """Define the initial player position."""
@@ -399,9 +397,13 @@ def mainloop():
     level = LevelDefinition(sheet)
     pillar_group = level.define_pillar_tiles()
     floor_group = level.define_floor_tiles()
-    crawler_group = level.define_crawlers()
-    player_group = level.define_player()
+    crawler_group = Crawler.group
+    player_group = Player.group
     sword_group = Player.sword_group
+
+    Player.spawn(1, 1)
+    level.define_crawlers()
+
 
     while True:
         for event in pygame.event.get():
@@ -423,19 +425,20 @@ def mainloop():
         crawler_group.draw(screen)
         sword_group.draw(screen)
 
-        player_group.sprite.update(dt, {
+        player_group.update(dt, {
             CollisionType.BLOCK: [crawler_group, pillar_group],
             CollisionType.TAKE_DAMAGE: [crawler_group],
         })
 
-        if player_group.sprite.dead:
-            return
 
         crawler_group.update(dt, {
             CollisionType.BLOCK: [crawler_group, pillar_group],
             CollisionType.DO_DAMAGE: [player_group],
             CollisionType.TAKE_DAMAGE: [sword_group],
         })
+
+        if player_group.sprites() == []:
+            return
 
         pygame.display.flip()
 

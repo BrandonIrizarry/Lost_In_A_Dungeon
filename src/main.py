@@ -113,22 +113,6 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
                     self.__class__.kill(self)
                     break
 
-    def check_do_damage(self,
-                        move_by: Vector2,
-                        groups: list[pygame.sprite.Group]):
-        """Check whether this sprite inflicted damage"""
-
-        tentative = self.rect.move(move_by)
-
-        for group in groups:
-            for sprite in group:
-                collided = tentative.colliderect(sprite.rect)
-
-                if collided:
-                    print("did")
-                    sprite.__class__.kill(sprite)
-                    break
-
     @abc.abstractmethod
     def update(self, dt, collision_type: dict[CollisionType,
                                               list[pygame.sprite.Group]]):
@@ -234,9 +218,6 @@ class Player(Moving):
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
-        self.check_do_damage(proposed_disp,
-                             coltype[CollisionType.DO_DAMAGE])
-
         self.check_take_damage(proposed_disp,
                                coltype[CollisionType.TAKE_DAMAGE])
 
@@ -297,9 +278,6 @@ class Crawler(Moving):
         proposed_disp = Vector2(dx, dy) * self.speed * dt
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
-
-        self.check_do_damage(proposed_disp,
-                             coltype[CollisionType.DO_DAMAGE])
 
         self.check_take_damage(proposed_disp,
                                coltype[CollisionType.TAKE_DAMAGE])
@@ -427,13 +405,11 @@ def mainloop():
 
         player_group.update(dt, {
             CollisionType.BLOCK: [pillar_group],
-            CollisionType.TAKE_DAMAGE: [],
-            CollisionType.DO_DAMAGE: [],
+            CollisionType.TAKE_DAMAGE: [crawler_group],
         })
 
         crawler_group.update(dt, {
             CollisionType.BLOCK: [crawler_group, pillar_group],
-            CollisionType.DO_DAMAGE: [player_group],
             CollisionType.TAKE_DAMAGE: [sword_group],
         })
 

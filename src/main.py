@@ -170,6 +170,9 @@ class Player(Moving):
 
         super().__init__(x, y, **animations)
 
+        self.cooldown = 0.2
+        self.timer = 0
+
     def get_sword(self, x, y):
         """Get the sword sprite."""
         tile_def = None
@@ -193,6 +196,14 @@ class Player(Moving):
 
         """
 
+        self.timer -= dt
+
+        if self.timer > 0:
+            return
+
+        # Remove the sword from gameplay.
+        self.sword_group.empty()
+
         dx, dy = 0, 0
 
         keys = pygame.key.get_pressed()
@@ -206,14 +217,12 @@ class Player(Moving):
         elif keys[pygame.K_d]:
             dx = 1
         elif keys[pygame.K_k]:
-            if self.sword_group.sprites() != []:
-                self.sword_group.empty()
-            else:
-                sx, sy = cs.compute_grid_coords(self.rect.centerx,
-                                                self.rect.centery)
-                sword = self.get_sword(sx + self.direction[0] * 0.5,
-                                       sy + self.direction[1] * 0.5)
-                self.sword_group.add(sword)
+            sx, sy = cs.compute_grid_coords(self.rect.centerx,
+                                            self.rect.centery)
+            sword = self.get_sword(sx + self.direction[0] * 0.5,
+                                   sy + self.direction[1] * 0.5)
+            self.sword_group.add(sword)
+            self.timer = self.cooldown
 
         proposed_disp = Vector2(dx, dy) * self.speed * dt
         actual_disp = self.check_block(proposed_disp,

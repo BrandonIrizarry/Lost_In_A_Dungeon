@@ -99,9 +99,9 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
         return False
 
-    def check_did_damage(self,
-                         move_by: Vector2,
-                         groups: list[pygame.sprite.Group]) -> bool:
+    def check_do_damage(self,
+                        move_by: Vector2,
+                        groups: list[pygame.sprite.Group]) -> bool:
         """Return whether this sprite inflicted damage upon being
         updated.
 
@@ -229,8 +229,8 @@ class Crawler(Moving):
 
         # Alias this, to keep long lines under control.
         do_damage = CollisionType.DO_DAMAGE
-        self.damage_delivered = self.check_did_damage(proposed_disp,
-                                                      coltype[do_damage])
+        self.damage_delivered = self.check_do_damage(proposed_disp,
+                                                     coltype[do_damage])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a

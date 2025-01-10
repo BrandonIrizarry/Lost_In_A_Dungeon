@@ -20,6 +20,14 @@ class CollisionType(Enum):
     BLOCK = auto()
 
 
+class Direction(Enum):
+    """An enum for using vectors as hashmap keys."""
+    UP = Vector2(0, -1)
+    DOWN = Vector2(0, 1)
+    LEFT = Vector2(-1, 0)
+    RIGHT = Vector2(1, 0)
+
+
 class Moving(pygame.sprite.Sprite, abc.ABC):
     """Parent class of player and crawler sprites."""
 
@@ -27,16 +35,16 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
         pygame.sprite.Sprite.__init__(self)
 
         self.motions_table = {
-            cs.DOWN: [animations["down"][0], animations["down"][1]],
-            cs.UP: [animations["up"][0], animations["up"][1]],
-            cs.LEFT: [animations["left"][0], animations["left"][1]],
-            cs.RIGHT: [animations["right"][0], animations["right"][1]]
+            Direction.DOWN: [animations["down"][0], animations["down"][1]],
+            Direction.UP: [animations["up"][0], animations["up"][1]],
+            Direction.LEFT: [animations["left"][0], animations["left"][1]],
+            Direction.RIGHT: [animations["right"][0], animations["right"][1]]
         }
 
         self.animation_speed = 5
         self.animation_index = 0
         self.speed = 200
-        self.direction = cs.DOWN
+        self.direction = Direction.DOWN
 
         # Define the image and rect of this sprite.
         self.image = self.motions_table[self.direction][0]
@@ -164,21 +172,21 @@ class Player(Moving):
         self.cooldown = 0.2
         self.timer = 0.0
 
-    def get_sword(self, x, y):
+    def get_sword(self, p: Vector2):
         """Get the sword sprite."""
         tile_def = None
 
         match self.direction:
-            case cs.UP:
+            case Direction.UP:
                 tile_def = TileDef.SWORD_UP
-            case cs.DOWN:
+            case Direction.DOWN:
                 tile_def = TileDef.SWORD_DOWN
-            case cs.LEFT:
+            case Direction.LEFT:
                 tile_def = TileDef.SWORD_LEFT
-            case cs.RIGHT:
+            case Direction.RIGHT:
                 tile_def = TileDef.SWORD_RIGHT
 
-        return Fixture(x, y, sheet.get(tile_def))
+        return Fixture(p.x, p.y, sheet.get(tile_def))
 
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):
@@ -195,27 +203,26 @@ class Player(Moving):
         # Remove the sword from gameplay.
         self.sword_group.empty()
 
-        dx, dy = 0, 0
+        delta = Vector2(0, 0)
 
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_w]:
-            dy = -1
+            delta.y = -1
         elif keys[pygame.K_s]:
-            dy = 1
+            delta.y = 1
         elif keys[pygame.K_a]:
-            dx = -1
+            delta.x = -1
         elif keys[pygame.K_d]:
-            dx = 1
+            delta.x = 1
         elif keys[pygame.K_k]:
             sx, sy = cs.compute_grid_coords(self.rect.centerx,
                                             self.rect.centery)
-            sword = self.get_sword(sx + self.direction[0] * 0.5,
-                                   sy + self.direction[1] * 0.5)
+            sword = self.get_sword(Vector2(sx, sy) + self.direction.value * 0.5)
             self.sword_group.add(sword)
             self.timer = self.cooldown
 
-        proposed_disp = Vector2(dx, dy) * self.speed * dt
+        proposed_disp = delta * self.speed * dt
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
@@ -231,8 +238,18 @@ class Player(Moving):
             self.animate(dt)
 
         # Update the player's direction.
-        if dx != 0 or dy != 0:
-            self.direction = (dx, dy)
+        if delta != Vector2(0, 0):
+            match delta:
+                case Vector2(x=0, y=-1):
+                    self.direction = Direction.UP
+                case Vector2(x=0, y=1):
+                    self.direction = Direction.DOWN
+                case Vector2(x=-1, y=0):
+                    self.direction = Direction.LEFT
+                case Vector2(x=1, y=0):
+                    self.direction = Direction.RIGHT
+                case _:
+                    raise Exception(f"Invalid delta: {delta}")
 
 
 class Crawler(Moving):
@@ -268,15 +285,13 @@ class Crawler(Moving):
         self.timer -= dt
 
         if self.timer <= 0:
-            self.direction = random.choice([cs.UP,
-                                            cs.DOWN,
-                                            cs.LEFT,
-                                            cs.RIGHT])
+            self.direction = random.choice([Direction.UP,
+                                            Direction.DOWN,
+                                            Direction.LEFT,
+                                            Direction.RIGHT])
             self.timer = self.cooldown
 
-        dx, dy = self.direction
-
-        proposed_disp = Vector2(dx, dy) * self.speed * dt
+        proposed_disp = self.direction.value * self.speed * dt
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
@@ -338,7 +353,7 @@ class LevelDefinition:
         for x in range(cs.NUM_TILES_X):
             for y in range(cs.NUM_TILES_Y):
                 if (x, y) not in self.pillar_positions:
-                    if random.random() <= 1/100:
+                    if random.random() <= 1/20:
                         Crawler.spawn(x, y)
 
     def define_player(self) -> pygame.sprite.GroupSingle:

@@ -82,9 +82,9 @@ class Moving(pygame.sprite.Sprite, abc.ABC):
 
         return move_by
 
-    def check_damage(self,
-                     move_by: Vector2,
-                     damage_groups: list[pygame.sprite.Group]) -> bool:
+    def check_take_damage(self,
+                          move_by: Vector2,
+                          damage_groups: list[pygame.sprite.Group]) -> bool:
         """Check for a damage collision initiated by this sprite.
 
         Return whether a damaging hit occurred."""
@@ -153,8 +153,8 @@ class Player(Moving):
         actual_disp = self.check_block(proposed_disp,
                                        coltype[CollisionType.BLOCK])
 
-        self.dead = self.check_damage(proposed_disp,
-                                      coltype[CollisionType.TAKE_DAMAGE])
+        self.dead = self.check_take_damage(proposed_disp,
+                                           coltype[CollisionType.TAKE_DAMAGE])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a

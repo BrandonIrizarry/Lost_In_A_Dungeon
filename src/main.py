@@ -149,6 +149,16 @@ class Fixture(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=xs, y=ys)
 
 
+class Sword(pygame.sprite.Sprite):
+    """Allow pixel-level positioning."""
+
+    def __init__(self, x: int, y: int, image: pygame.Surface):
+        super().__init__()
+
+        self.image = image
+        self.rect = self.image.get_rect(x=x, y=y)
+
+
 class Player(Moving):
     """The player, controllable by the user via the keyboard."""
 
@@ -172,7 +182,7 @@ class Player(Moving):
         self.cooldown = 0.2
         self.timer = 0.0
 
-    def get_sword(self, p: Vector2):
+    def get_sword(self):
         """Get the sword sprite."""
         tile_def = None
 
@@ -186,7 +196,12 @@ class Player(Moving):
             case Direction.RIGHT:
                 tile_def = TileDef.SWORD_RIGHT
 
-        return Fixture(int(p.x), int(p.y), sheet.get(tile_def))
+        half_width = self.rect.width // 2
+        cv = Vector2(self.rect.centerx, self.rect.centery)
+        cv = cv + self.direction.value * cs.GRID_FACTOR
+
+        print(cv)
+        return Sword(cv.x, cv.y, sheet.get(tile_def))
 
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):
@@ -216,18 +231,7 @@ class Player(Moving):
         elif keys[pygame.K_d]:
             delta.x = 1
         elif keys[pygame.K_k]:
-            sx, sy = cs.compute_grid_coords(self.rect.centerx,
-                                            self.rect.centery)
-
-            # For now, snap the player to the grid whenever she uses
-            # the sword, since our sword constructor logic is a bit
-            # faulty here.
-            px, py = cs.compute_pixel_coords(sx, sy)
-            self.rect.x = px
-            self.rect.y = py
-
-            spos = Vector2(sx, sy) + self.direction.value
-            sword = self.get_sword(spos)
+            sword = self.get_sword()
             self.sword_group.add(sword)
             self.timer = self.cooldown
 

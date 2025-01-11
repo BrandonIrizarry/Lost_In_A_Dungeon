@@ -36,3 +36,10 @@ Use k to draw your sword, to kill the red crawlers.
 Avoid the crawlers. If you touch one, you lose the game.
 
 Reach the stairs at the far corner of the maze, and you win.
+
+## Sprite Attribution
+
+[Legend of Zelda (Items and Weapons)](https://www.spriters-resource.com/nes/legendofzelda/sheet/54720/)
+[Final Fantasy (Castle)](https://www.spriters-resource.com/nes/finalfantasy/sheet/115344/)
+[Final Fantasy (Light Warriors)](https://www.spriters-resource.com/nes/finalfantasy/sheet/10555/)
+

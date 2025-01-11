@@ -367,15 +367,6 @@ class LevelDefinition:
                     if random.random() <= 1/20:
                         Crawler.spawn(x, y)
 
-    def define_player(self) -> pygame.sprite.GroupSingle:
-        """Define the initial player position."""
-
-        player_group: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
-
-        player = Player(1, 1)
-        player_group.add(player)
-
-        return player_group
 
 
 pygame.init()

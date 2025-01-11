@@ -188,6 +188,14 @@ class Floor(Fixture):
                     cls.group.add(floor)
 
 
+class StairsUp(Fixture):
+    group: pygame.sprite.Group = pygame.sprite.Group()
+
+    def __init__(self, x: int, y: int):
+        super().__init__(x, y, sheet.get(TileDef.STAIRS_UP))
+        self.__class__.group.add(self)
+
+
 class Sword(pygame.sprite.Sprite):
     """Allow pixel-level positioning."""
 
@@ -400,6 +408,7 @@ def mainloop() -> None:
     Floor.spawn_tiles(occupied_positions)
     Crawler.define_crawlers(occupied_positions)
     Player.spawn(1, 1)
+    StairsUp(cs.NUM_TILES_X - 2, cs.NUM_TILES_Y - 2)
 
     while True:
         for event in pygame.event.get():
@@ -420,6 +429,7 @@ def mainloop() -> None:
         Player.group.draw(screen)
         Crawler.group.draw(screen)
         Player.sword_group.draw(screen)
+        StairsUp.group.draw(screen)
 
         Player.group.update(dt, {
             CollisionType.BLOCK: [Pillar.group],

@@ -140,6 +140,34 @@ class Fixture(pygame.sprite.Sprite):
 
     """
 
+    pillar_group: pygame.sprite.Group = pygame.sprite.Group()
+    floor_group: pygame.sprite.Group = pygame.sprite.Group()
+
+    @classmethod
+    def define_pillar_tiles(cls, sheet, occupied_positions: set[Point]):
+        """Define pillar positions in the level."""
+
+        for x in range(cs.GRID_X):
+            for y in range(cs.GRID_Y):
+                pos = maze.compute_pillar_position(grid, x, y)
+
+                for p in pos:
+                    occupied_positions.add(p)
+
+            for x, y in occupied_positions:
+                pillar = cls(x, y, sheet.get(TileDef.PILLAR))
+                cls.pillar_group.add(pillar)
+
+    @classmethod
+    def define_floor_tiles(cls, sheet, occupied_positions: set[Point]):
+        """Define floor tile positions in the level."""
+
+        for x in range(cs.NUM_TILES_X):
+            for y in range(cs.NUM_TILES_Y):
+                if (x, y) not in occupied_positions:
+                    floor = cls(x, y, sheet.get(TileDef.FLOOR))
+                    cls.floor_group.add(floor)
+
     def __init__(self, x: int, y: int, image: pygame.Surface):
         super().__init__()
 
@@ -291,6 +319,20 @@ class Crawler(Moving):
         self.timer = self.cooldown
         self.speed = 100
 
+    @classmethod
+    def define_crawlers(cls, occupied_positions: set[Point]):
+        """Define initial crawler positions in the level.
+
+        The Crawler class manages its own group.
+
+        """
+
+        for x in range(cs.NUM_TILES_X):
+            for y in range(cs.NUM_TILES_Y):
+                if (x, y) not in occupied_positions:
+                    if random.random() <= 1/20:
+                        Crawler.spawn(x, y)
+
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):
         self.timer -= dt
@@ -320,55 +362,6 @@ class Crawler(Moving):
             self.timer = 0
 
 
-class LevelDefinition:
-    def __init__(self, sheet: Spritesheet):
-        # Use a set, so that we can remove duplicates (we don't add a pillar
-        # twice to a given board position.)
-        self.pillar_positions: set[Point] = set()
-        self.sheet = sheet
-
-    def define_pillar_tiles(self) -> pygame.sprite.Group:
-        """Define pillar positions in the level."""
-
-        pillar_group: pygame.sprite.Group = pygame.sprite.Group()
-
-        for x in range(cs.GRID_X):
-            for y in range(cs.GRID_Y):
-                pos = maze.compute_pillar_position(grid, x, y)
-
-                for p in pos:
-                    self.pillar_positions.add(p)
-
-            for x, y in self.pillar_positions:
-                pillar = Fixture(x, y, self.sheet.get(TileDef.PILLAR))
-                pillar_group.add(pillar)
-
-        return pillar_group
-
-    def define_floor_tiles(self) -> pygame.sprite.Group:
-        """Define floor tile positions in the level."""
-
-        floor_group: pygame.sprite.Group = pygame.sprite.Group()
-
-        for x in range(cs.NUM_TILES_X):
-            for y in range(cs.NUM_TILES_Y):
-                if (x, y) not in self.pillar_positions:
-                    floor = Fixture(x, y, self.sheet.get(TileDef.FLOOR))
-                    floor_group.add(floor)
-
-        return floor_group
-
-    def define_crawlers(self):
-        """Define initial crawler positions in the level."""
-
-        for x in range(cs.NUM_TILES_X):
-            for y in range(cs.NUM_TILES_Y):
-                if (x, y) not in self.pillar_positions:
-                    if random.random() <= 1/20:
-                        Crawler.spawn(x, y)
-
-
-
 pygame.init()
 screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
 screen = pygame.display.set_mode(screen_dimensions)
@@ -378,7 +371,7 @@ grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
 grid.carve()
 
 
-def mainloop():
+def mainloop() -> None:
     """The main pygame loop.
 
     The loop is encapsulated inside this function so that we can easily
@@ -386,17 +379,22 @@ def mainloop():
 
     """
     clock = pygame.time.Clock()
-    dt = 0
+    dt = 0.0
 
-    level = LevelDefinition(sheet)
-    pillar_group = level.define_pillar_tiles()
-    floor_group = level.define_floor_tiles()
+    # Use a set, so that we can remove duplicates (we don't add a pillar
+    # twice to a given board position.)
+    occupied_positions: set[Point] = set()
+
+    Fixture.define_pillar_tiles(sheet, occupied_positions)
+    Fixture.define_floor_tiles(sheet, occupied_positions)
+    Crawler.define_crawlers(occupied_positions)
+    Player.spawn(1, 1)
+
+    pillar_group = Fixture.pillar_group
+    floor_group = Fixture.floor_group
     crawler_group = Crawler.group
     player_group = Player.group
     sword_group = Player.sword_group
-
-    Player.spawn(1, 1)
-    level.define_crawlers()
 
     while True:
         for event in pygame.event.get():
@@ -429,6 +427,7 @@ def mainloop():
         })
 
         if player_group.sprites() == []:
+            print("You died!")
             return
 
         pygame.display.flip()

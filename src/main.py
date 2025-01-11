@@ -401,12 +401,6 @@ def mainloop() -> None:
     Crawler.define_crawlers(occupied_positions)
     Player.spawn(1, 1)
 
-    pillar_group = Pillar.group
-    floor_group = Floor.group
-    crawler_group = Crawler.group
-    player_group = Player.group
-    sword_group = Player.sword_group
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -421,20 +415,20 @@ def mainloop() -> None:
         # leaving streaks.
         screen.fill(pygame.Color("black"))
 
-        pillar_group.draw(screen)
-        floor_group.draw(screen)
-        player_group.draw(screen)
-        crawler_group.draw(screen)
-        sword_group.draw(screen)
+        Pillar.group.draw(screen)
+        Floor.group.draw(screen)
+        Player.group.draw(screen)
+        Crawler.group.draw(screen)
+        Player.sword_group.draw(screen)
 
-        player_group.update(dt, {
-            CollisionType.BLOCK: [pillar_group],
-            CollisionType.TAKE_DAMAGE: [crawler_group],
+        Player.group.update(dt, {
+            CollisionType.BLOCK: [Pillar.group],
+            CollisionType.TAKE_DAMAGE: [Crawler.group],
         })
 
-        crawler_group.update(dt, {
-            CollisionType.BLOCK: [crawler_group, pillar_group],
-            CollisionType.TAKE_DAMAGE: [sword_group],
+        Crawler.group.update(dt, {
+            CollisionType.BLOCK: [Crawler.group, Pillar.group],
+            CollisionType.TAKE_DAMAGE: [Player.sword_group],
         })
 
         if player_group.sprites() == []:

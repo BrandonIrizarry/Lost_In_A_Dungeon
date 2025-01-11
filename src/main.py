@@ -186,7 +186,7 @@ class Player(Moving):
             case Direction.RIGHT:
                 tile_def = TileDef.SWORD_RIGHT
 
-        return Fixture(p.x, p.y, sheet.get(tile_def))
+        return Fixture(int(p.x), int(p.y), sheet.get(tile_def))
 
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):

@@ -17,7 +17,8 @@ class CollisionType(Enum):
     """
     TAKE_DAMAGE = auto(),
     DO_DAMAGE = auto(),
-    BLOCK = auto()
+    BLOCK = auto(),
+    WIN = auto()
 
 
 class Direction(Enum):
@@ -228,6 +229,7 @@ class Player(Moving):
 
         self.cooldown = 0.2
         self.timer = 0.0
+        self.won = False
 
     def get_sword(self):
         """Get the sword sprite."""
@@ -247,6 +249,21 @@ class Player(Moving):
         cv = cv + self.direction.value * cs.LEVEL_FACTOR
 
         return Sword(cv.x, cv.y, sheet.get(tile_def))
+
+    def check_win(self,
+                  move_by: Vector2,
+                  groups: list[pygame.sprite.Group]):
+        """Check whether the player wins."""
+
+        tentative = self.rect.move(move_by)
+
+        for group in groups:
+            for sprite in group:
+                collided = tentative.colliderect(sprite.rect)
+
+                if collided:
+                    self.won = True
+                    break
 
     def update(self, dt, coltype: dict[CollisionType,
                                        list[pygame.sprite.Group]]):
@@ -286,6 +303,9 @@ class Player(Moving):
 
         self.check_take_damage(proposed_disp,
                                coltype[CollisionType.TAKE_DAMAGE])
+
+        self.check_win(proposed_disp,
+                       coltype[CollisionType.WIN])
 
         # The displacement could be the zero vector, either because
         # (dx, dy) is the zero tuple (because the user didn't press a
@@ -434,6 +454,7 @@ def mainloop() -> None:
         Player.group.update(dt, {
             CollisionType.BLOCK: [Pillar.group],
             CollisionType.TAKE_DAMAGE: [Crawler.group],
+            CollisionType.WIN: [StairsUp.group]
         })
 
         Crawler.group.update(dt, {
@@ -443,6 +464,10 @@ def mainloop() -> None:
 
         if Player.group.sprite is None:
             print("You died!")
+            return
+
+        if Player.group.sprite.won:
+            print("You won!")
             return
 
         pygame.display.flip()

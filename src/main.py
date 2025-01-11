@@ -8,6 +8,7 @@ import maze
 from pygame.math import Vector2
 import abc
 from enum import Enum, auto
+import os
 
 
 class CollisionType(Enum):
@@ -404,7 +405,9 @@ class Crawler(Moving):
 pygame.init()
 screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
 screen = pygame.display.set_mode(screen_dimensions)
-sheet = Spritesheet("../graphics/spritesheet.png")
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sheet = Spritesheet(f"{dir_path}/../graphics/spritesheet.png")
 
 grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
 grid.carve()

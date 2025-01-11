@@ -140,11 +140,23 @@ class Fixture(pygame.sprite.Sprite):
 
     """
 
-    pillar_group: pygame.sprite.Group = pygame.sprite.Group()
-    floor_group: pygame.sprite.Group = pygame.sprite.Group()
+    def __init__(self, x: int, y: int, image: pygame.Surface):
+        super().__init__()
+
+        self.image = image
+
+        xs, ys = cs.compute_pixel_coords(x, y)
+        self.rect = self.image.get_rect(x=xs, y=ys)
+
+
+class Pillar(Fixture):
+    group: pygame.sprite.Group = pygame.sprite.Group()
+
+    def __init__(self, x: int, y: int):
+        super().__init__(x, y, sheet.get(TileDef.PILLAR))
 
     @classmethod
-    def define_pillar_tiles(cls, sheet, occupied_positions: set[Point]):
+    def define_pillar_tiles(cls, occupied_positions: set[Point]):
         """Define pillar positions in the level."""
 
         for x in range(cs.GRID_X):
@@ -155,26 +167,25 @@ class Fixture(pygame.sprite.Sprite):
                     occupied_positions.add(p)
 
             for x, y in occupied_positions:
-                pillar = cls(x, y, sheet.get(TileDef.PILLAR))
-                cls.pillar_group.add(pillar)
+                pillar = cls(x, y)
+                cls.group.add(pillar)
+
+
+class Floor(Fixture):
+    group: pygame.sprite.Group = pygame.sprite.Group()
+
+    def __init__(self, x: int, y: int):
+        super().__init__(x, y, sheet.get(TileDef.FLOOR))
 
     @classmethod
-    def define_floor_tiles(cls, sheet, occupied_positions: set[Point]):
+    def define_floor_tiles(cls, occupied_positions: set[Point]):
         """Define floor tile positions in the level."""
 
         for x in range(cs.NUM_TILES_X):
             for y in range(cs.NUM_TILES_Y):
                 if (x, y) not in occupied_positions:
-                    floor = cls(x, y, sheet.get(TileDef.FLOOR))
-                    cls.floor_group.add(floor)
-
-    def __init__(self, x: int, y: int, image: pygame.Surface):
-        super().__init__()
-
-        self.image = image
-
-        xs, ys = cs.compute_pixel_coords(x, y)
-        self.rect = self.image.get_rect(x=xs, y=ys)
+                    floor = cls(x, y)
+                    cls.group.add(floor)
 
 
 class Sword(pygame.sprite.Sprite):
@@ -385,13 +396,13 @@ def mainloop() -> None:
     # twice to a given board position.)
     occupied_positions: set[Point] = set()
 
-    Fixture.define_pillar_tiles(sheet, occupied_positions)
-    Fixture.define_floor_tiles(sheet, occupied_positions)
+    Pillar.define_pillar_tiles(occupied_positions)
+    Floor.define_floor_tiles(occupied_positions)
     Crawler.define_crawlers(occupied_positions)
     Player.spawn(1, 1)
 
-    pillar_group = Fixture.pillar_group
-    floor_group = Fixture.floor_group
+    pillar_group = Pillar.group
+    floor_group = Floor.group
     crawler_group = Crawler.group
     player_group = Player.group
     sword_group = Player.sword_group

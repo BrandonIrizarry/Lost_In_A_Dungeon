@@ -197,7 +197,7 @@ class Player(Moving):
                 tile_def = TileDef.SWORD_RIGHT
 
         half_width = self.rect.width // 2
-        cv = Vector2(self.rect.centerx, self.rect.centery)
+        cv = Vector2(self.rect.x, self.rect.y)
         cv = cv + self.direction.value * cs.GRID_FACTOR
 
         return Sword(cv.x, cv.y, sheet.get(tile_def))

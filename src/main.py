@@ -431,7 +431,7 @@ def mainloop() -> None:
             CollisionType.TAKE_DAMAGE: [Player.sword_group],
         })
 
-        if player_group.sprites() == []:
+        if Player.group.sprite is None:
             print("You died!")
             return
 

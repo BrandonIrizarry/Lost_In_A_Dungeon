@@ -200,7 +200,6 @@ class Player(Moving):
         cv = Vector2(self.rect.centerx, self.rect.centery)
         cv = cv + self.direction.value * cs.GRID_FACTOR
 
-        print(cv)
         return Sword(cv.x, cv.y, sheet.get(tile_def))
 
     def update(self, dt, coltype: dict[CollisionType,

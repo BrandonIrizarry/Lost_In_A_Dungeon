@@ -218,7 +218,16 @@ class Player(Moving):
         elif keys[pygame.K_k]:
             sx, sy = cs.compute_grid_coords(self.rect.centerx,
                                             self.rect.centery)
-            sword = self.get_sword(Vector2(sx, sy) + self.direction.value * 0.5)
+
+            # For now, snap the player to the grid whenever she uses
+            # the sword, since our sword constructor logic is a bit
+            # faulty here.
+            px, py = cs.compute_pixel_coords(sx, sy)
+            self.rect.x = px
+            self.rect.y = py
+
+            spos = Vector2(sx, sy) + self.direction.value
+            sword = self.get_sword(spos)
             self.sword_group.add(sword)
             self.timer = self.cooldown
 

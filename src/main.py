@@ -156,7 +156,7 @@ class Pillar(Fixture):
         super().__init__(x, y, sheet.get(TileDef.PILLAR))
 
     @classmethod
-    def define_pillar_tiles(cls, occupied_positions: set[Point]):
+    def spawn_tiles(cls, occupied_positions: set[Point]):
         """Define pillar positions in the level."""
 
         for x in range(cs.GRID_X):
@@ -178,7 +178,7 @@ class Floor(Fixture):
         super().__init__(x, y, sheet.get(TileDef.FLOOR))
 
     @classmethod
-    def define_floor_tiles(cls, occupied_positions: set[Point]):
+    def spawn_tiles(cls, occupied_positions: set[Point]):
         """Define floor tile positions in the level."""
 
         for x in range(cs.NUM_TILES_X):
@@ -396,8 +396,8 @@ def mainloop() -> None:
     # twice to a given board position.)
     occupied_positions: set[Point] = set()
 
-    Pillar.define_pillar_tiles(occupied_positions)
-    Floor.define_floor_tiles(occupied_positions)
+    Pillar.spawn_tiles(occupied_positions)
+    Floor.spawn_tiles(occupied_positions)
     Crawler.define_crawlers(occupied_positions)
     Player.spawn(1, 1)
 

@@ -196,7 +196,6 @@ class Player(Moving):
             case Direction.RIGHT:
                 tile_def = TileDef.SWORD_RIGHT
 
-        half_width = self.rect.width // 2
         cv = Vector2(self.rect.x, self.rect.y)
         cv = cv + self.direction.value * cs.GRID_FACTOR
 

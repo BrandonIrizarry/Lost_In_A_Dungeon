@@ -43,3 +43,13 @@ Reach the stairs at the far corner of the maze, and you win.
 [Final Fantasy (Castle)](https://www.spriters-resource.com/nes/finalfantasy/sheet/115344/)
 [Final Fantasy (Light Warriors)](https://www.spriters-resource.com/nes/finalfantasy/sheet/10555/)
 
+## A Note on the Maze Generation Algorithm
+
+The [Hunt and Kill](https://weblog.jamisbuck.org/2011/1/24/maze-generation-hunt-and-kill-algorithm.html) algorithm is used to generate
+a different maze on each run of the game.
+
+It's similar to depth first search, except there's no need to keep a
+stack for backtracking from dead ends.
+
+
+

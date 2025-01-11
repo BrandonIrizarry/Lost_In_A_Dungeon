@@ -11,8 +11,13 @@ A rougelike written in pygame.
 
 ## Usage
 
-Clone the repo, then run `$PYTHON3 main.py`, where `$PYTHON3` refers
-to your Python 3 executable.
+Clone the repo.
+
+Run `pip install -r requirements.txt` to get pygame, if you don't have
+it yet.
+
+Then, run `$PYTHON3 src/main.py`, where `$PYTHON3` refers to your
+Python 3 executable.
 
 Currently, Python 3.13+ is supported.
 

@@ -402,19 +402,6 @@ class Crawler(Moving):
             self.timer = 0
 
 
-pygame.init()
-cs.configure_scale_factor(2)
-
-screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
-screen = pygame.display.set_mode(screen_dimensions)
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
-sheet = Spritesheet(f"{dir_path}/../graphics/spritesheet.png")
-
-grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
-grid.carve()
-
-
 def mainloop() -> None:
     """The main pygame loop.
 
@@ -481,5 +468,17 @@ def mainloop() -> None:
 
 
 if __name__ == "__main__":
+    pygame.init()
+    cs.configure_scale_factor(2)
+
+    screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
+    screen = pygame.display.set_mode(screen_dimensions)
+
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    sheet = Spritesheet(f"{dir_path}/../graphics/spritesheet.png")
+
+    grid = maze.Grid(cs.GRID_X, cs.GRID_Y)
+    grid.carve()
+
     mainloop()
     pygame.quit()

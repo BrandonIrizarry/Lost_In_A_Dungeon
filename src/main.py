@@ -9,6 +9,7 @@ from pygame.math import Vector2
 import abc
 from enum import Enum, auto
 import os
+import argparse
 
 
 class CollisionType(Enum):
@@ -468,8 +469,15 @@ def mainloop() -> None:
 
 
 if __name__ == "__main__":
+    # Get the scale factor as a command-line argument.
+    #
+    # Note that the scale factor must be an integer.
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--scale-factor", nargs="?", default=1, type=int)
+    args = parser.parse_args()
+
     pygame.init()
-    cs.configure_scale_factor(2)
+    cs.configure_scale_factor(args.scale_factor)
 
     screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
     screen = pygame.display.set_mode(screen_dimensions)

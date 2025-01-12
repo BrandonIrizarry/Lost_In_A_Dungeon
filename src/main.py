@@ -360,7 +360,7 @@ class Crawler(Moving):
         self.speed = 100
 
     @classmethod
-    def define_crawlers(cls, occupied_positions: set[Point]):
+    def spawn_crawlers(cls, occupied_positions: set[Point]):
         """Define initial crawler positions in the level.
 
         The Crawler class manages its own group.
@@ -429,7 +429,7 @@ def mainloop() -> None:
 
     Pillar.spawn_tiles(occupied_positions)
     Floor.spawn_tiles(occupied_positions)
-    Crawler.define_crawlers(occupied_positions)
+    Crawler.spawn_crawlers(occupied_positions)
     Player.spawn(1, 1)
     StairsUp(cs.NUM_TILES_X - 2, cs.NUM_TILES_Y - 2)
 

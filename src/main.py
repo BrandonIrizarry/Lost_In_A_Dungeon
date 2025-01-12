@@ -403,6 +403,8 @@ class Crawler(Moving):
 
 
 pygame.init()
+cs.configure_scale_factor(2)
+
 screen_dimensions = cs.compute_pixel_coords(cs.NUM_TILES_X, cs.NUM_TILES_Y)
 screen = pygame.display.set_mode(screen_dimensions)
 

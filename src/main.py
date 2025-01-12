@@ -367,8 +367,8 @@ class Crawler(Moving):
 
         """
 
-        for x in range(cs.NUM_TILES_X):
-            for y in range(cs.NUM_TILES_Y):
+        for x in range(2, cs.NUM_TILES_X):
+            for y in range(2, cs.NUM_TILES_Y):
                 if (x, y) not in occupied_positions:
                     if random.random() <= 1/20:
                         Crawler.spawn(x, y)

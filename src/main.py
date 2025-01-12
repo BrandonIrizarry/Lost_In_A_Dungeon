@@ -480,5 +480,6 @@ def mainloop() -> None:
         dt = clock.tick(60) / 1000
 
 
-mainloop()
-pygame.quit()
+if __name__ == "__main__":
+    mainloop()
+    pygame.quit()

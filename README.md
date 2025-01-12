@@ -21,6 +21,17 @@ Python 3 executable.
 
 Currently, Python 3.13+ is supported.
 
+### Command-Line Arguments
+
+The application accepts an integer argument via the `-s` flag (long
+form `--scale-factor`), used to scale the game display. For example,
+the following invocation scales the game display by a factor of 2:
+
+`python src/main.py -s 2`
+
+Most users should be fine with the default, but in cases of a high
+screen resolution, an argument of 2 may be needed.
+
 ## Background
 
 You are lost in a maze, and need to find the way out.
